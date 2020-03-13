@@ -13,3 +13,7 @@ variable "ssh_id" {}
 variable "tags" {}
 
 variable "domain" {}
+
+variable "ssh_key" {}
+
+variable "hostname" {}

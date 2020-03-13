@@ -10,6 +10,6 @@ resource "ibm_compute_vm_instance" "masters" {
     ssh_key_ids = var.ssh_id
     local_disk = false
     tags = var.tags
-    private_security_group_ids = [ ibm_security_group.master_sg.id ]
-    public_security_group_ids = [ ibm_security_group.master_sg.id ]
+    private_security_group_ids = [ ibm_security_group.master_private_sg.id ]
+    public_security_group_ids = [ ibm_security_group.master_public_sg.id ]
 }

@@ -32,7 +32,6 @@ resource "ibm_compute_ssh_key" "cluster_ssh_key" {
     tags = var.tags
 }
 
-
 module "master" {
     source = "./modules/master_node"
 
@@ -57,22 +56,43 @@ module "worker" {
     datacenter = var.datacenter
     ssh_id = local.ssh_keys
     tags = var.tags
-    master_sg = module.master.master_sg_id
 }
 
 module "install" {
     source = "./modules/install_node"
 
+    hostname = "installer"
     hostnames = var.master_name
     domain = local.cluster_domain
     qty = var.master_qty
     flavor = var.installer_flavor
-    os = var.os_reference
+    os = var.installer_os_reference
     datacenter = var.datacenter
     ssh_id = local.ssh_keys
     tags = var.tags
+    ssh_key = tls_private_key.new_ssh_key
 }
 
-data "ibm_dns_domain" "domain" {
-    name = var.domain
+module "prepare_ansible" {
+    source = "./modules/prepare_ansible"
+
+    masters = module.master.master_nodes
+    workers = module.worker.worker_nodes
+    rh_user = var.redhat_un
+    rh_pass = var.redhat_pw
+    pool_id = var.openshift_pool_id
+    ssh_key = tls_private_key.new_ssh_key
+    installer = module.install.installer_node
+    installer_private = module.install.local_ips
+    master_private = module.master.local_ips
+    worker_private = module.worker.local_ips
+    cluster_domain = local.cluster_domain
+}
+
+module "dns" {
+    source = "./modules/dns"
+
+    domain = var.domain
+    cluster_domain = local.cluster_domain
+    master_ip = module.master.master_nodes[0]
 }

@@ -1,0 +1,2 @@
+- name: run installer
+  command: ansible-playbook -i /etc/ansible/hosts /opt/openshift/playbooks/prerequisites.yml

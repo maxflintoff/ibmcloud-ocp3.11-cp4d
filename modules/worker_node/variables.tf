@@ -13,5 +13,3 @@ variable "ssh_id" {}
 variable "tags" {}
 
 variable "domain" {}
-
-variable "master_sg" {}

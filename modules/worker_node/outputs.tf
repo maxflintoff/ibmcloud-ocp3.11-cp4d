@@ -1,10 +1,10 @@
-output "master_nodes" {
-    value = [for host in ibm_compute_vm_instance.masters: host.ipv4_address]
+output "worker_nodes" {
+    value = [for host in ibm_compute_vm_instance.workers: host.ipv4_address]
 }
 
 locals {
     local_ips = [
-        for host in ibm_compute_vm_instance.masters: {
+        for host in ibm_compute_vm_instance.workers: {
             name = host.hostname,
             ip = host.ipv4_address_private
         }

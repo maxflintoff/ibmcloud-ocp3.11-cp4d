@@ -10,6 +10,18 @@ variable "iaas_classic_api_key" {
     type = string
 }
 
+variable "redhat_un" {
+    type = string
+}
+
+variable "redhat_pw" {
+    type = string
+}
+
+variable "openshift_pool_id" {
+    type = string
+}
+
 variable "ssh_key" {
     type = list(string)
     default = []
@@ -42,7 +54,7 @@ variable "os_reference" {
 
 variable "installer_os_reference" {
     type = string
-    default = "REDHAT_7_64"
+    default = "CENTOS_7_64"
 }
 
 variable "master_qty" {

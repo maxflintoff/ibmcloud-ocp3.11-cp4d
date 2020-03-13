@@ -1,0 +1,8 @@
+[OSEv3:children]
+masters
+nodes
+etcd
+
+[OSEv3:vars]
+openshift_deployment_type=openshift-enterprise
+

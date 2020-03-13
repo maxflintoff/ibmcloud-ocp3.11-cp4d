@@ -1,0 +1,18 @@
+- hosts: installer
+  pre_tasks:
+    - name: Importing variables
+      set_fact:
+        masters_parsed: "{{ masters | list }}"
+        workers_parsed: "{{ workers | list }}"
+        installer_parsed: "{{ installer | list }}"
+  remote_user: root
+  roles:
+  - installer
+- hosts: workers,masters
+  remote_user: root
+  roles:
+  - cluster
+- hosts: installer
+  remote_user: root
+  roles:
+  - openshift_installer

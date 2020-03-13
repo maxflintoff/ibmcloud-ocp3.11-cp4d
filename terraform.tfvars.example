@@ -5,3 +5,6 @@ iaas_classic_api_key = "example-api-key-1234"
 # Name of an ssh key previously uploaded to IBM Cloud: https://cloud.ibm.com/docs/vpc-on-classic-vsi?topic=vpc-on-classic-vsi-managing-ssh-keys
 ssh_key = [ "example-ssh-key" ]
 domain = "example.com"
+redhat_un = "redhat@example.com"
+redhat_pw = "redhat_password"
+openshift_pool_id = "poolid"

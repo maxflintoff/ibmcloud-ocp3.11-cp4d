@@ -1,0 +1,113 @@
+- name: parse interfaces
+  set_fact:
+    internal_interface="{{ item }}"
+  when: hostvars[inventory_hostname]['ansible_{{item}}']['ipv4']['address'] == installer.ip
+  with_items:
+  - "{{ ansible_interfaces }}"
+- name: Install required packages
+  yum:
+    name:
+    - dnsmasq
+    - epel-release
+    - python-jinja2
+    - pyOpenSSL
+    - python-lxml
+    - git
+    state: present
+- name: Install ansible
+  yum:
+    name: ansible
+    state: present
+- name: Update packages
+  yum:
+    name: "*"
+    state: latest   
+- name: Clone Installer Repository
+  git:
+    clone: yes
+    repo: https://github.com/openshift/openshift-ansible.git
+    dest: /opt/openshift
+    version: release-3.11
+- name: Copy ansible hosts
+  copy:
+    dest:  /etc/ansible/hosts
+    src: inventory
+    owner: root
+    group: root
+    mode: "0644"
+- name: Adding [masters] to ansible hosts file
+  lineinfile:
+    path: /etc/ansible/hosts
+    line: "[masters]"
+- name: Adding masters to ansible hosts file
+  lineinfile:
+    path: /etc/ansible/hosts
+    line: "{{ item.name }}.{{cluster_domain}} #master"
+  loop: "{{ masters_parsed }}"
+- name: Adding [etcd] to ansible hosts file
+  lineinfile:
+    path: /etc/ansible/hosts
+    line: '[etcd]'
+- name: Adding etcd to ansible hosts file
+  lineinfile:
+    path: /etc/ansible/hosts
+    line: "{{ item.name }}.{{cluster_domain}} #etcd"
+  loop: "{{ masters_parsed }}"
+- name: Adding [nodes] to ansible hosts file
+  lineinfile:
+    path: /etc/ansible/hosts
+    line: '[nodes]'
+- name: Adding masters to ansible hosts file
+  lineinfile:
+    path: /etc/ansible/hosts
+    line: "{{ item.name }}.{{cluster_domain}} openshift_node_group_name='node-config-master-infra'"
+  loop: "{{ masters_parsed }}"
+- name: Adding workers to ansible hosts file
+  lineinfile:
+    path: /etc/ansible/hosts
+    line: "{{ item.name }}.{{cluster_domain}} openshift_node_group_name='node-config-compute'"
+  loop: "{{ workers_parsed }}"
+- name: Adding masters to hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: "{{item.ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
+  loop: "{{ masters_parsed }}"
+- name: Adding workers to hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: "{{item.ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
+  loop: "{{ workers_parsed }}"
+- name: Adding installer to hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: "{{installer.ip}} {{ installer.name }}.{{cluster_domain}} {{installer.name}}"
+- name: Adding domain-needed to dnsmasq.conf
+  lineinfile:
+    path: /etc/dnsmasq.conf
+    regexp: '^#domain-needed'
+    line: "domain-needed"
+- name: Adding bogus-priv to dnsmasq.conf
+  lineinfile:
+    path: /etc/dnsmasq.conf
+    regexp: '^#bogus-priv'
+    line: "bogus-priv"
+- name: Adding listen-address to dnsmasq.conf
+  lineinfile:
+    path: /etc/dnsmasq.conf
+    regexp: '^#listen-address='
+    line: "listen-address=127.0.0.1,{{ installer.ip }}"
+- name: Adding interfaces to dnsmasq.conf
+  lineinfile:
+    path: /etc/dnsmasq.conf
+    regexp: '^#interface='
+    line: "interface={{ internal_interface }}"
+- name: turn off DHCP
+  lineinfile:
+    path: /etc/dnsmasq.conf
+    regexp: '^#no-dhcp-interface='
+    line: "no-dhcp-interface="
+- name: enabling dnsmasq
+  systemd:
+    name: dnsmasq
+    enabled: yes
+    state: started

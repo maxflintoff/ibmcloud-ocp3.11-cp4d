@@ -1,0 +1,97 @@
+- name: make sure line 'dns=none' is set in /etc/NetworkManager/NetworkManager.conf
+  ini_file:
+    path: /etc/NetworkManager/NetworkManager.conf
+    state: present
+    no_extra_spaces: yes
+    section: main
+    option: dns
+    value: none
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify:
+    - reload NetworkManager
+- name: deploy resolv.conf template
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify:
+    - reload NetworkManager
+- name: Register as user with subscription manager
+  redhat_subscription:
+    state: present
+    username: "{{ rh_user }}"
+    password: "{{ rh_pass }}"
+    server_hostname: subscription.rhn.redhat.com:443/subscription
+    rhsm_baseurl: https://cdn.redhat.com
+    rhsm_repo_ca_cert: "%(ca_cert_dir)sredhat-uep.pem"
+    pool_ids: "{{pool_id}}"
+- name: Disable all RHSM repositories
+  rhsm_repository:
+    name: '*'
+    state: disabled
+- name: Remove all yum repositories
+  yum_repository:
+    name: "*"
+    state: absent
+- name: Enable Repos for OCP
+  rhsm_repository:
+    name:
+    - rhel-7-server-rpms
+    - rhel-7-server-extras-rpms
+    - rhel-7-server-ose-3.11-rpms
+    - rhel-7-server-ansible-2.8-rpms
+    state: present
+- name: Install Base Packages
+  yum:
+    name:
+    - wget
+    - git
+    - net-tools
+    - bind-utils
+    - yum-utils
+    - iptables-services
+    - bridge-utils
+    - bash-completion
+    - kexec-tools
+    - sos
+    - psacct
+    state: present
+  notify:
+  - reboot machine
+- name: Update installed Packages
+  yum:
+    name: "*"
+    state: latest
+  notify:
+  - reboot machine
+- name: Install openshift-ansible
+  yum:
+    name: openshift-ansible
+    state: present
+- name: Install Docker
+  yum:
+    name:
+    - docker-1.13.1
+    - docker-novolume-plugin
+    state: present
+- name: Edit Docker OPTIONS
+  lineinfile:
+    path: /etc/sysconfig/docker
+    regexp: '^OPTIONS='
+    line: OPTIONS='--selinux-enabled --log-driver=journald --signature-verification=false'
+- name: restart Docker service, also issue daemon-reload to pick up config changes
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
+- name: enable & start service docker-novolume
+  systemd:
+    name: docker-novolume-plugin
+    enabled: yes
+    state: started
