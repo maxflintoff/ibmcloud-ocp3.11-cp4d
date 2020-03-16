@@ -111,3 +111,8 @@
     name: dnsmasq
     enabled: yes
     state: started
+- name: install client tools
+  unarchive:
+   remote_src: yes
+   src: https://mirror.openshift.com/pub/openshift-v3/clients/3.11.188/linux/oc.tar.gz
+   dest: /usr/local/bin
