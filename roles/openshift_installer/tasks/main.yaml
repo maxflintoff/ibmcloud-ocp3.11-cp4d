@@ -1,2 +1,6 @@
-- name: run installer
-  command: ansible-playbook -i /etc/ansible/hosts /opt/openshift/playbooks/prerequisites.yml
+- name: Clone Installer Repository
+  git:
+    clone: yes
+    repo: https://github.com/openshift/openshift-ansible.git
+    dest: "{{playbook_dir}}/installer_files/openshift"
+    version: release-3.11

@@ -1,3 +1,3 @@
-variable "cluster_domain" {}
+variable "cluster_name" {}
 variable "domain" {}
-variable "master_ip" {}
+variable "master" {}

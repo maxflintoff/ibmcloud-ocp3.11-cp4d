@@ -86,6 +86,8 @@ module "prepare_ansible" {
     installer_private = module.install.local_ips
     master_private = module.master.local_ips
     worker_private = module.worker.local_ips
+    master_public = module.master.remote_ips
+    worker_public = module.worker.remote_ips
     cluster_domain = local.cluster_domain
 }
 
@@ -93,6 +95,6 @@ module "dns" {
     source = "./modules/dns"
 
     domain = var.domain
-    cluster_domain = local.cluster_domain
-    master_ip = module.master.master_nodes[0]
+    cluster_name = var.cluster_name
+    master = module.master.master_nodes
 }

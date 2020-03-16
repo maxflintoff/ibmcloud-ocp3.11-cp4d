@@ -22,15 +22,35 @@
     backup: yes
   notify:
     - reload NetworkManager
+- name: remove RHSM
+  redhat_subscription:
+    state: absent
+    username: "{{ rh_user }}"
+    password: "{{ rh_pass }}"
+- name: edit RHSM files
+  lineinfile:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '^hostname = '
+    line: hostname = subscription.rhn.redhat.com
+- name: edit port RHSM
+  lineinfile:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '^port = '
+    line: port = 443
+- name: edit prefix RHSM
+  lineinfile:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '^prefix = '
+    line: prefix = /subscription
 - name: Register as user with subscription manager
   redhat_subscription:
     state: present
     username: "{{ rh_user }}"
     password: "{{ rh_pass }}"
-    server_hostname: subscription.rhn.redhat.com:443/subscription
     rhsm_baseurl: https://cdn.redhat.com
     rhsm_repo_ca_cert: "%(ca_cert_dir)sredhat-uep.pem"
     pool_ids: "{{pool_id}}"
+    force_register: yes
 - name: Disable all RHSM repositories
   rhsm_repository:
     name: '*'
@@ -85,13 +105,50 @@
     path: /etc/sysconfig/docker
     regexp: '^OPTIONS='
     line: OPTIONS='--selinux-enabled --log-driver=journald --signature-verification=false'
-- name: restart Docker service, also issue daemon-reload to pick up config changes
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: docker
+  notify:
+  - restart docker
 - name: enable & start service docker-novolume
   systemd:
     name: docker-novolume-plugin
     enabled: yes
     state: started
+- name: set selinux policy
+  selinux:
+    policy: targeted
+    state: enforcing
+- name: configure docker storage
+  copy:
+    content: |
+      DEVS=/dev/xvdc
+      VG=docker-vg
+    dest: /etc/sysconfig/docker-storage-setup
+    mode: u+rw,g+r,o+r
+- name: Delete existing docker storage configuration
+  file: 
+    path: /etc/sysconfig/docker-storage
+    state: absent
+- name: run docker storage setup
+  command: docker-storage-setup
+- name: extend Docker VG
+  lvol:
+    vg: docker-vg
+    lv: docker-pool
+    size: 60%VG
+- name: stop docker
+  service:
+    name: docker
+    state: stopped
+- name: delete docker files
+  file:
+    path: /var/lib/docker
+    state: absent
+- name: start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+- name: Making sure NetworkManager is started
+  service:
+    name: NetworkManager
+    state: started
+    enabled: yes

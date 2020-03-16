@@ -76,7 +76,7 @@ variable "tags" {
 
 variable "master_flavor" {
     type = string
-    default = "B1_8X32X100"
+    default = "B1_8X32X25"
 }
 
 variable "worker_qty" {
@@ -93,7 +93,7 @@ variable "worker_name" {
 
 variable "worker_flavor" {
     type = string
-    default = "B1_16X64X100"
+    default = "B1_16X64X25"
 }
 
 variable "resource_group_name" {

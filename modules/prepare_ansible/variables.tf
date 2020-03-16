@@ -8,4 +8,6 @@ variable "installer" {}
 variable "master_private" {}
 variable "installer_private" {}
 variable "worker_private" {}
+variable "master_public" {}
+variable "worker_public" {}
 variable "cluster_domain" {}

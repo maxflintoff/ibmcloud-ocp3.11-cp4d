@@ -8,11 +8,19 @@
   remote_user: root
   roles:
   - installer
-- hosts: workers,masters
+- hosts: ocp_workers,ocp_masters
   remote_user: root
   roles:
   - cluster
-- hosts: installer
-  remote_user: root
+- hosts: localhost
+  pre_tasks:
+    - name: Importing variables
+      set_fact:
+        masters_parsed: "{{ masters_remote | list }}"
+        workers_parsed: "{{ workers_remote | list }}"
   roles:
   - openshift_installer
+- name: run prereqs
+  import_playbook: "{{playbook_dir}}/installer_files/openshift/playbooks/prerequisites.yml"
+- name: run installer
+  import_playbook: "{{playbook_dir}}/installer_files/openshift/playbooks/deploy_cluster.yml"
