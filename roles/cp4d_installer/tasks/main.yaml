@@ -1,4 +1,4 @@
-- name: extracting cp4d installer files
-  unarchive:
-    src: "{{playbook_dir}}/installer_files/cloudpak4data-ee-v2.5.0.0.tgz"
-    dest: /opt/cp4d/
+- name: Load installer files
+  include: installer_files.yaml
+- name: Load portworx install
+  include: portworx_install.yaml

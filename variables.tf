@@ -110,3 +110,8 @@ variable "installer_flavor" {
     type = string
     default = "B1_2X8X100"
 }
+
+variable "openshift_password" {
+    type = string
+    default = "Ch4ngeM3"
+}

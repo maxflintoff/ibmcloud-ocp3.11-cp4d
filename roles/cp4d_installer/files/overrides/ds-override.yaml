@@ -1,0 +1,15 @@
+shared-services:
+  kafka:
+    volumeClaim:
+      overrideStorageClass: true
+      storageClassName: "portworx-kafka-sc"
+
+wdp-db2:
+  dataVolume:
+    storageClassName: "portworx-db2-sc"
+    overrideStorageClass: true
+
+xmetarepoVolumeInfo:
+  volumeClaim:
+    storageClassName: "portworx-db2-sc"
+    overrideStorageClass: true

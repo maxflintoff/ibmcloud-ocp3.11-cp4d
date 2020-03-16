@@ -1,0 +1,37 @@
+couchdb:
+  persistentVolume:
+    storageClass: "portworx-couchdb-sc"
+    overrideStorageClass: true
+
+elasticsearch:
+  persistence:
+    storageClass: "portworx-elastic-sc"
+    overrideStorageClass: true
+
+shared-services:
+  kafka:
+    volumeClaim:
+      overrideStorageClass: true
+      storageClassName: "portworx-kafka-sc"
+  cassandra:
+    volumeClaim:
+      overrideStorageClass: true
+      storageClassName: "portworx-cassandra-sc"
+
+solr:
+  volumeClaim:
+    overrideStorageClass: true
+    storageClassName: "portworx-shared-sc"
+
+wdp-db2:
+  dataVolume:
+    storageClassName: "portworx-db2-sc"
+    overrideStorageClass: true
+
+xmetarepoVolumeInfo:
+  volumeClaim:
+    storageClassName: "portworx-db2-sc"
+    overrideStorageClass: true
+
+zenCoreMetaDb:
+  storageClass: portworx-metastoredb-sc

@@ -24,3 +24,12 @@
   import_playbook: "{{playbook_dir}}/installer_files/openshift/playbooks/prerequisites.yml"
 - name: run installer
   import_playbook: "{{playbook_dir}}/installer_files/openshift/playbooks/deploy_cluster.yml"
+- hosts: ocp_masters
+  remote_user: root
+  tasks:
+  - name: setting cluster-admin role
+    command: oc create clusterrolebinding ocpadmin --clusterrole cluster-admin --user ocpadmin
+- hosts: installer
+  remote_user: root
+  roles:
+  - cp4d_installer

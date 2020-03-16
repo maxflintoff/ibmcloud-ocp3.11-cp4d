@@ -1,0 +1,12 @@
+- name: Create openshift project
+  command: oc new-project zen
+- name: set executable permssion on cpd-linux
+  file:
+    path: /opt/cp4d/bin/cpd-linux
+    mode: '0744'
+    owner: root
+    group: root
+- name: Run lite install
+  command: bin/cpd-linux --repo ./repo.yaml -a lite
+  args:
+    chdir: /opt/cp4d

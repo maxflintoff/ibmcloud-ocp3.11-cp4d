@@ -1,0 +1,12 @@
+couchdb:
+  persistentVolume:
+    storageClass: "portworx-couchdb-sc"
+    overrideStorageClass: true
+
+elasticsearch:
+  persistence:
+    storageClass: "portworx-elastic-sc"
+    overrideStorageClass: true
+
+zenCoreMetaDb:
+  storageClass: "portworx-metastoredb-sc"

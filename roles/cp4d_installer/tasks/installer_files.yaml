@@ -1,0 +1,22 @@
+- name: creating cp4d dir
+  file:
+    path: /opt/cp4d/
+    state: directory
+- name: extracting cp4d installer files
+  unarchive:
+    src: "{{playbook_dir}}/installer_files/cloudpak4data-ee-v2.5.0.0.tgz"
+    dest: /opt/cp4d/
+- name: Login to cluster
+  command: oc login https://{{masters[0]['name']}}.{{cluster_domain}}:8443 --username ocpadmin --password Ch4ngeM3 --insecure-skip-tls-verify
+- name: copy repo.yaml
+  copy:
+    src: "{{playbook_dir}}/installer_files/repo.yaml"
+    dest: /opt/cp4d/repo.yaml
+- name: install docker
+  yum:
+    name: docker
+    state: present
+- name: start docker
+  service:
+    name: docker
+    state: started

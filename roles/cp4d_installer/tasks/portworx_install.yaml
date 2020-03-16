@@ -1,0 +1,24 @@
+
+- name: unarchive portworx
+  unarchive:
+    src: /opt/cp4d/cpd-portworx.tgz
+    remote_src: yes
+    dest: /opt/cp4d/
+- name: creating temporary image dir
+  file:
+    path: /tmp/cpd-px-images/
+    state: directory
+- name: running portworx image script
+  command: /opt/cp4d/cpd-portworx/bin/px-images.sh -d /tmp/cpd-px-images/ download
+- name: Apply activation to nodes
+  command: /opt/cp4d/cpd-portworx/bin/px-util initialize
+- name: Load images to nodes
+  command: /opt/cp4d/cpd-portworx/bin/px-images.sh -e 'ssh -o StrictHostKeyChecking=no -l root' -d /tmp/cpd-px-images load
+- name: Deploy services
+  command: /opt/cp4d/cpd-portworx/bin/px-install.sh -pp Never install
+- name: Install storage classes
+  command: /opt/cp4d/cpd-portworx/bin/px-sc.sh
+- name: Copy override files
+  copy:
+    src: overrides/ 
+    dest: /opt/cp4d/cpd-portworx/overrides
