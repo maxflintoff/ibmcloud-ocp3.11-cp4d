@@ -14,6 +14,11 @@
   command: /opt/cp4d/cpd-portworx/bin/px-util initialize
 - name: Load images to nodes
   command: /opt/cp4d/cpd-portworx/bin/px-images.sh -e 'ssh -o StrictHostKeyChecking=no -l root' -d /tmp/cpd-px-images load
+- name: edit installer to allow automated install
+  lineinfile:
+    path: /opt/cp4d/cpd-portworx/bin/px-install.sh
+    regexp: '^YESTOALL'
+    line: YESTOALL=1
 - name: Deploy services
   command: /opt/cp4d/cpd-portworx/bin/px-install.sh -pp Never install
 - name: Install storage classes

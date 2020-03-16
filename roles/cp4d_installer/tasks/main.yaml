@@ -1,4 +1,3 @@
-- name: Load installer files
-  include: installer_files.yaml
-- name: Load portworx install
-  include: portworx_install.yaml
+
+- name: load assembly installer
+  include: lite_install.yaml

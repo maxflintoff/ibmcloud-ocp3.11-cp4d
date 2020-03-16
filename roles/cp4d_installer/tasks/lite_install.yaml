@@ -1,12 +1,28 @@
 - name: Create openshift project
   command: oc new-project zen
+  ignore_errors: yes
 - name: set executable permssion on cpd-linux
   file:
     path: /opt/cp4d/bin/cpd-linux
     mode: '0744'
     owner: root
     group: root
+- name: extract docker registry
+  command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
+  register: docker_registry
+- name: get token
+  command: oc whoami -t
+  register: oc_token
 - name: Run lite install
-  command: bin/cpd-linux --repo ./repo.yaml -a lite
+  command: |
+    bin/cpd-linux -r repo.yaml \ 
+    -a lite \
+    -n zen \
+    -c portworx-shared-gp \
+    -o cpd-portworx/overrides/cp-override.yaml \
+    --transfer-image-to {{docker_registry.stdout}}/zen \
+    --cluster-pull-prefix docker-registry.default.svc:5000/zen \
+    --target-registry-username ocadmin \
+    --target-registry-password {{oc_token.stdout}}
   args:
     chdir: /opt/cp4d

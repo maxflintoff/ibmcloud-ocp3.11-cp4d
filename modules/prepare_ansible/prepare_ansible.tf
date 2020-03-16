@@ -61,3 +61,8 @@ resource "local_file" "ssh_key" {
     filename = "${path.root}/installer_files/id_rsa"
     file_permission = 0400
 }
+
+resource "local_file" "ssh_key_public" {
+    content = var.ssh_key.public_key_openssh
+    filename = "${path.root}/installer_files/id_rsa.pub"
+}

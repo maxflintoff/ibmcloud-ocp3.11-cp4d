@@ -111,6 +111,15 @@
     name: dnsmasq
     enabled: yes
     state: started
+- name: Copy ssh key
+  copy:
+    src: "{{playbook_dir}}/installer_files/id_rsa"
+    dest: /root/.ssh/id_rsa
+    mode: '0400'
+- name: copy public key
+  copy:
+    src: "{{playbook_dir}}/installer_files/id_rsa"
+    dest: /root/.ssh/id_rsa.pub    
 - name: install client tools
   unarchive:
    remote_src: yes

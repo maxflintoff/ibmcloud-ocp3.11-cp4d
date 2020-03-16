@@ -22,13 +22,13 @@ variable "openshift_pool_id" {
     type = string
 }
 
+variable "domain" {
+    type = string
+}
+
 variable "ssh_key" {
     type = list(string)
     default = []
-}
-
-variable "domain" {
-    type = string
 }
 
 variable "region" {

@@ -11,17 +11,3 @@ resource "ibm_compute_vm_instance" "installer" {
     private_security_group_ids = [ ibm_security_group.installer_private_sg.id ]
     public_security_group_ids = [ ibm_security_group.installer_public_sg.id ]
 }
-
-resource "null_resource" "copy_private_key" {
-    provisioner "file" {
-        content = var.ssh_key.private_key_pem
-        destination = "/root/.ssh/id_rsa"
-
-        connection {
-            type = "ssh"
-            user = "root"
-            host = ibm_compute_vm_instance.installer.ipv4_address
-            private_key = var.ssh_key.private_key_pem
-        }
-    }
-}
