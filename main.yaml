@@ -12,23 +12,16 @@
   remote_user: root
   roles:
   - cluster
-- hosts: localhost
-  pre_tasks:
-    - name: Importing variables
-      set_fact:
-        masters_parsed: "{{ masters_remote | list }}"
-        workers_parsed: "{{ workers_remote | list }}"
+- hosts: installer
+  remote_user: root
   roles:
   - openshift_installer
-- name: run prereqs
-  import_playbook: "{{playbook_dir}}/installer_files/openshift/playbooks/prerequisites.yml"
-- name: run installer
-  import_playbook: "{{playbook_dir}}/installer_files/openshift/playbooks/deploy_cluster.yml"
 - hosts: ocp_masters
   remote_user: root
   tasks:
   - name: setting cluster-admin role
     command: oc create clusterrolebinding ocpadmin --clusterrole cluster-admin --user ocpadmin
+  ignore_errors: yes
 - hosts: installer
   remote_user: root
   roles:

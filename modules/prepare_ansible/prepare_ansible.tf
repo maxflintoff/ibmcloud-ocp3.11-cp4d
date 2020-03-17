@@ -1,13 +1,13 @@
 resource "local_file" "inventory" {
     content = <<EOT
 [ocp_masters]
-%{ for master in var.masters }${master.ipv4_address}
+%{ for master in var.masters }${master.public_ip}
 %{ endfor }
 [ocp_workers]
-%{ for worker in var.workers }${worker.ipv4_address}
+%{ for worker in var.workers }${worker.public_ip}
 %{ endfor }
 [installer]
-${var.installer}
+${var.installer.public_ip}
 [OSEv3:children]
 masters
 nodes
@@ -28,13 +28,13 @@ masters
 compute
 
 [masters]
-%{ for master in var.masters }${master.ipv4_address} openshift_public_hostname=${master.hostname}.${master.domain} openshift_ip=${master.ipv4_address_private} openshift_node_group_name='node-config-master-infra' %{ endfor }
+%{ for master in var.masters }${master.public_ip} openshift_public_hostname=${master.name}.${var.cluster_domain} openshift_ip=${master.private_ip} openshift_node_group_name='node-config-master-infra' %{ endfor }
 
 [etcd]
-%{ for master in var.masters }${master.ipv4_address} %{ endfor }
+%{ for master in var.masters }${master.public_ip} %{ endfor }
 
 [compute]
-%{ for worker in var.workers }${worker.ipv4_address} openshift_public_hostname=${worker.hostname}.${worker.domain} openshift_ip=${worker.ipv4_address_private} openshift_node_group_name='node-config-compute'
+%{ for worker in var.workers }${worker.public_ip} openshift_public_hostname=${worker.name}.${var.cluster_domain} openshift_ip=${worker.private_ip} openshift_node_group_name='node-config-compute'
 %{ endfor }
 EOT
     filename = "${path.root}/installer_files/inventory"
@@ -46,11 +46,9 @@ ansible_ssh_private_key_file: ${path.root}/installer_files/id_rsa
 rh_user: ${var.rh_user}
 rh_pass: ${var.rh_pass}
 pool_id: ${var.pool_id}
-masters: ${jsonencode(var.master_private)}
-workers: ${jsonencode(var.worker_private)}
-installer: ${jsonencode(var.installer_private)}
-masters_remote: ${jsonencode(var.master_public)}
-workers_remote: ${jsonencode(var.worker_public)}
+masters: ${jsonencode(var.masters)}
+workers: ${jsonencode(var.workers)}
+installer: ${jsonencode(var.installer)}
 cluster_domain: ${var.cluster_domain}
 EOT
     filename = "${path.root}/installer_files/group_vars/all.yaml"

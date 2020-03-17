@@ -11,6 +11,6 @@ resource "ibm_compute_vm_instance" "workers" {
     local_disk = false
     tags = var.tags
     disks = [100, 1000]
-    private_security_group_ids = [ ibm_security_group.worker_private_sg.id ]
-    public_security_group_ids = [ ibm_security_group.worker_public_sg.id ]
+    private_security_group_ids = [ ibm_security_group.worker_sg.id ]
+    public_security_group_ids = [ ibm_security_group.worker_sg.id ]
 }

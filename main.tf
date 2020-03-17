@@ -76,18 +76,13 @@ module "install" {
 module "prepare_ansible" {
     source = "./modules/prepare_ansible"
 
-    masters = module.master.master_nodes
-    workers = module.worker.worker_nodes
     rh_user = var.redhat_un
     rh_pass = var.redhat_pw
     pool_id = var.openshift_pool_id
     ssh_key = tls_private_key.new_ssh_key
-    installer = module.install.installer_node
-    installer_private = module.install.local_ips
-    master_private = module.master.local_ips
-    worker_private = module.worker.local_ips
-    master_public = module.master.remote_ips
-    worker_public = module.worker.remote_ips
+    installer = module.install.ips
+    masters = module.master.ips
+    workers = module.worker.ips
     cluster_domain = local.cluster_domain
 }
 

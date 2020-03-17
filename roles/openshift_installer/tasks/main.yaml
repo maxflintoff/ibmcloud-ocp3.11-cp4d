@@ -1,6 +1,26 @@
-- name: Clone Installer Repository
-  git:
-    clone: yes
-    repo: https://github.com/openshift/openshift-ansible.git
-    dest: "{{playbook_dir}}/installer_files/openshift"
-    version: release-3.11
+- name: setup known hosts
+  shell: "ssh-keyscan {{ item.name }}.{{ cluster_domain }}"
+  with_items: "{{masters}}"
+  register: ssh_known_host_results
+- name: add results to known_hosts
+  known_hosts:
+    name: "{{item.item.name}}.{{cluster_domain}}"
+    key: "{{item.stdout}}"
+    state: present
+    path: /root/.ssh/known_hosts
+  with_items: "{{ssh_known_host_results.results}}"
+- name: setup known hosts
+  shell: "ssh-keyscan {{ item.name }}.{{ cluster_domain }}"
+  with_items: "{{workers}}"
+  register: ssh_known_host_results
+- name: add results to known_hosts
+  known_hosts:
+    name: "{{item.item.name}}.{{cluster_domain}}"
+    key: "{{item.stdout}}"
+    state: present
+    path: /root/.ssh/known_hosts
+  with_items: "{{ssh_known_host_results.results}}"
+- name: Run prereqs installer
+  command: ansible-playbook /opt/openshift/playbooks/prerequisites.yml
+- name: Run cluster installer
+  command: ansible-playbook /opt/openshift/playbooks/deploy_cluster.yml

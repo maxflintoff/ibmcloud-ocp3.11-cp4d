@@ -1,7 +1,7 @@
 - name: parse interfaces
   set_fact:
     internal_interface="{{ item }}"
-  when: hostvars[inventory_hostname]['ansible_{{item}}']['ipv4']['address'] == installer.ip
+  when: hostvars[inventory_hostname]['ansible_{{item}}']['ipv4']['address'] == installer.private_ip
   with_items:
   - "{{ ansible_interfaces }}"
 - name: Install required packages
@@ -29,58 +29,27 @@
     dest: /opt/openshift
     version: release-3.11
 - name: Copy ansible hosts
-  copy:
+  template:
     dest:  /etc/ansible/hosts
-    src: inventory
+    src: inventory.j2
     owner: root
     group: root
-    mode: "0644"
-- name: Adding [masters] to ansible hosts file
-  lineinfile:
-    path: /etc/ansible/hosts
-    line: "[masters]"
-- name: Adding masters to ansible hosts file
-  lineinfile:
-    path: /etc/ansible/hosts
-    line: "{{ item.name }}.{{cluster_domain}} #master"
-  loop: "{{ masters_parsed }}"
-- name: Adding [etcd] to ansible hosts file
-  lineinfile:
-    path: /etc/ansible/hosts
-    line: '[etcd]'
-- name: Adding etcd to ansible hosts file
-  lineinfile:
-    path: /etc/ansible/hosts
-    line: "{{ item.name }}.{{cluster_domain}} #etcd"
-  loop: "{{ masters_parsed }}"
-- name: Adding [nodes] to ansible hosts file
-  lineinfile:
-    path: /etc/ansible/hosts
-    line: '[nodes]'
-- name: Adding masters to ansible hosts file
-  lineinfile:
-    path: /etc/ansible/hosts
-    line: "{{ item.name }}.{{cluster_domain}} openshift_node_group_name='node-config-master-infra'"
-  loop: "{{ masters_parsed }}"
-- name: Adding workers to ansible hosts file
-  lineinfile:
-    path: /etc/ansible/hosts
-    line: "{{ item.name }}.{{cluster_domain}} openshift_node_group_name='node-config-compute'"
-  loop: "{{ workers_parsed }}"
+    mode: 0644
+    backup: yes
 - name: Adding masters to hosts file
   lineinfile:
     path: /etc/hosts
-    line: "{{item.ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
+    line: "{{item.private_ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
   loop: "{{ masters_parsed }}"
 - name: Adding workers to hosts file
   lineinfile:
     path: /etc/hosts
-    line: "{{item.ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
+    line: "{{item.private_ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
   loop: "{{ workers_parsed }}"
 - name: Adding installer to hosts file
   lineinfile:
     path: /etc/hosts
-    line: "{{installer.ip}} {{ installer.name }}.{{cluster_domain}} {{installer.name}}"
+    line: "{{installer.private_ip}} {{ installer.name }}.{{cluster_domain}} {{installer.name}}"
 - name: Adding domain-needed to dnsmasq.conf
   lineinfile:
     path: /etc/dnsmasq.conf
@@ -95,7 +64,7 @@
   lineinfile:
     path: /etc/dnsmasq.conf
     regexp: '^#listen-address='
-    line: "listen-address=127.0.0.1,{{ installer.ip }}"
+    line: "listen-address=127.0.0.1,{{ installer.private_ip }}"
 - name: Adding interfaces to dnsmasq.conf
   lineinfile:
     path: /etc/dnsmasq.conf
@@ -123,5 +92,10 @@
 - name: install client tools
   unarchive:
    remote_src: yes
-   src: https://mirror.openshift.com/pub/openshift-v3/clients/3.11.188/linux/oc.tar.gz
+   src: https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
    dest: /usr/local/bin
+   exclude:
+   - LICENSE
+   - README.md
+   extra_opts:
+   - --strip-components=1

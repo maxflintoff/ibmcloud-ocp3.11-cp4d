@@ -1,0 +1,33 @@
+[OSEv3:children]
+masters
+nodes
+etcd
+
+[OSEv3:vars]
+openshift_deployment_type=openshift-enterprise
+ansible_ssh_user=root
+oreg_auth_user={{rh_user}}
+oreg_auth_password={{rh_pass}}
+openshift_master_default_subdomain=apps.{{cluster_domain}}
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+openshift_master_htpasswd_users={'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
+openshift_node_set_node_ip=true
+
+[nodes:children]
+masters
+compute
+
+[masters]
+{% for item in masters_parsed %}
+{{ item.name }}.{{cluster_domain}} openshift_public_hostname={{item.name}}.{{cluster_domain}} openshift_ip={{item.private_ip}} openshift_node_group_name='node-config-master-infra'
+{% endfor %}
+
+[etcd]
+{% for item in masters_parsed %}
+{{ item.name }}.{{cluster_domain}}
+{% endfor %}
+
+[compute]
+{% for item in workers_parsed %}
+{{ item.name }}.{{cluster_domain}} openshift_public_hostname={{item.name}}.{{cluster_domain}} openshift_ip={{item.private_ip}} openshift_node_group_name='node-config-compute'
+{% endfor %}

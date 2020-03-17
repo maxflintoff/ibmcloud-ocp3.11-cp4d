@@ -11,6 +11,6 @@ resource "ibm_compute_vm_instance" "masters" {
     local_disk = false
     tags = var.tags
     disks = [100]
-    private_security_group_ids = [ ibm_security_group.master_private_sg.id ]
-    public_security_group_ids = [ ibm_security_group.master_public_sg.id ]
+    private_security_group_ids = [ ibm_security_group.master_sg.id ]
+    public_security_group_ids = [ ibm_security_group.master_sg.id ]
 }

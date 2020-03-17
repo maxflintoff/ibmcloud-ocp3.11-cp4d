@@ -13,6 +13,13 @@
 - name: get token
   command: oc whoami -t
   register: oc_token
+- name: Run lite adm setup
+  command: bin/cpd-linux adm -r repo.yaml -a lite -n zen --apply --accept-all-licenses
+  args:
+    chdir: /opt/cp4d
+- name: add ocpadmin the correct role
+  command: oc adm policy add-role-to-user cpd-admin-role ocpadmin --role-namespace=zen -n zen
+  ignore_errors: yes
 - name: Run lite install
   command: |
     bin/cpd-linux -r repo.yaml \ 
@@ -23,6 +30,8 @@
     --transfer-image-to {{docker_registry.stdout}}/zen \
     --cluster-pull-prefix docker-registry.default.svc:5000/zen \
     --target-registry-username ocadmin \
-    --target-registry-password {{oc_token.stdout}}
+    --target-registry-password {{oc_token.stdout}} \
+    --accept-all-licenses \
+    --insecure-skip-tls-verify
   args:
     chdir: /opt/cp4d
