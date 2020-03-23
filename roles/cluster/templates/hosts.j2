@@ -1,0 +1,7 @@
+127.0.0.1 localhost.localdomain localhost
+
+{{master.private_ip}} {{master.name}}.{{cluster_domain}} {{master.name}}
+
+{% for item in workers %}
+{{item.private_ip}} {{item.name}}.{{cluster_domain}} {{item.name}}
+{% endfor %}

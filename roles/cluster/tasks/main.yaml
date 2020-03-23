@@ -168,3 +168,24 @@
     name: NetworkManager
     state: started
     enabled: yes
+- name: make sure hosts isn't overwritten on restart
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    line: "manage_etc_hosts: False"
+    regexp: "^manage_etc_hosts"
+- name: deploy hosts file
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    mode: 0644
+- name: ensure file exists before deploy
+  file:
+    path: /etc/origin/node/
+    state: directory
+    mode: 0644
+- name: deploy node origin resolv.conf
+  template:
+    src: originresolv.conf.j2
+    dest: /etc/origin/node/resolv.conf
+    mode: 0644
+
