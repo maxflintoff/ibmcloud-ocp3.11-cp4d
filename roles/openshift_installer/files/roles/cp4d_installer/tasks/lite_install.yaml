@@ -17,7 +17,7 @@
   command: bin/cpd-linux adm -r repo.yaml -a lite -n zen --apply --accept-all-licenses
   args:
     chdir: /opt/cp4d
-- name: add ocpadmin the correct role
+- name: add the cp4d namespace role to ocpadmin
   command: oc adm policy add-role-to-user cpd-admin-role ocpadmin --role-namespace=zen -n zen
   ignore_errors: yes
 - name: Run lite install

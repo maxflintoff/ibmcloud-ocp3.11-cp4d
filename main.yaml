@@ -1,10 +1,4 @@
 - hosts: installer
-  pre_tasks:
-    - name: Importing variables
-      set_fact:
-        masters_parsed: "{{ masters | list }}"
-        workers_parsed: "{{ workers | list }}"
-        installer_parsed: "{{ installer | list }}"
   remote_user: root
   roles:
   - installer
@@ -16,13 +10,8 @@
   remote_user: root
   roles:
   - openshift_installer
-- hosts: ocp_masters
-  remote_user: root
+- hosts: localhost
   tasks:
-  - name: setting cluster-admin role
-    command: oc create clusterrolebinding ocpadmin --clusterrole cluster-admin --user ocpadmin
-  ignore_errors: yes
-- hosts: installer
-  remote_user: root
-  roles:
-  - cp4d_installer
+  - debug:
+      msg: | 
+        Now ssh to the installer and run the last playbook `ssh root@{{installer.public_ip}} -i {{playbook_dir}}/installer_files/id_rsa ansible-playbook /opt/installer/main.yaml`

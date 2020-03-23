@@ -1,26 +1,44 @@
 - name: setup known hosts
-  shell: "ssh-keyscan {{ item.name }}.{{ cluster_domain }}"
-  with_items: "{{masters}}"
-  register: ssh_known_host_results
-- name: add results to known_hosts
-  known_hosts:
-    name: "{{item.item.name}}.{{cluster_domain}}"
-    key: "{{item.stdout}}"
-    state: present
-    path: /root/.ssh/known_hosts
-  with_items: "{{ssh_known_host_results.results}}"
+  shell: |
+    ssh-keyscan {{ master.name }}.{{ cluster_domain }} >> /root/.ssh/known_hosts
+    ssh-keyscan {{ master.name }} >> /root/.ssh/known_hosts
+    ssh-keyscan {{ master.private_ip }} >> /root/.ssh/known_hosts
 - name: setup known hosts
-  shell: "ssh-keyscan {{ item.name }}.{{ cluster_domain }}"
+  shell:  |
+    ssh-keyscan {{ item.name }}.{{ cluster_domain }} >> /root/.ssh/known_hosts
+    ssh-keyscan {{ item.name }} >> /root/.ssh/known_hosts
+    ssh-keyscan {{ item.private_ip }} >> /root/.ssh/known_hosts
   with_items: "{{workers}}"
-  register: ssh_known_host_results
-- name: add results to known_hosts
-  known_hosts:
-    name: "{{item.item.name}}.{{cluster_domain}}"
-    key: "{{item.stdout}}"
-    state: present
-    path: /root/.ssh/known_hosts
-  with_items: "{{ssh_known_host_results.results}}"
-- name: Run prereqs installer
-  command: ansible-playbook /opt/openshift/playbooks/prerequisites.yml
-- name: Run cluster installer
-  command: ansible-playbook /opt/openshift/playbooks/deploy_cluster.yml
+- name: copy variables
+  copy:
+    src: "{{playbook_dir}}/installer_files/group_vars"
+    dest: /etc/ansible/
+- name: remove the ansible_ssh_key variable
+  lineinfile:
+    path: /etc/ansible/group_vars/all.yaml
+    state: absent
+    regexp: '^ansible_ssh_private_key_file'
+- name: creating cp4d dir
+  file:
+    path: /opt/cp4d/
+    state: directory
+- name: extracting cp4d installer files
+  unarchive:
+    src: "{{playbook_dir}}/installer_files/cloudpak4data-ee-v2.5.0.0.tgz"
+    dest: /opt/cp4d/
+- name: copy repo.yaml
+  copy:
+    src: "{{playbook_dir}}/installer_files/repo.yaml"
+    dest: /opt/cp4d/repo.yaml
+- name: creating installer dir
+  file:
+    path: /opt/installer/
+    state: directory
+- name: copy cp4d ansible playbook
+  copy:
+    src: main.yaml
+    dest: /opt/installer/main.yaml
+- name: copy cp4d ansible files
+  copy:
+    src: roles
+    dest: /opt/installer/

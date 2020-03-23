@@ -46,6 +46,14 @@ terraform apply
 ansible-playbook main.yaml
 ```
 
+due to some complications with the deployment of ocp the last command must be run from the installer node provisioned during the deployment.
+This command will also be printed at the end of the previous playbook
+
+```
+ssh root@<installer_ip> -i <project_dir>/installer_files/id_rsa
+ansible-playbook /opt/installer/main.yaml
+```
+
 <b>Post Install</b>
 
 Your cluster will be up and available at a url with this format

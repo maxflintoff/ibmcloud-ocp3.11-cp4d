@@ -99,6 +99,7 @@
 - name: get docker config
   command: cat /etc/sysconfig/docker-storage
   register: docker_storage
+  ignore_errors: yes
 - name: Install Docker
   yum:
     name:

@@ -1,4 +1,4 @@
-variable "hostnames" {}
+variable "hostname" {}
 
 variable "qty" {}
 

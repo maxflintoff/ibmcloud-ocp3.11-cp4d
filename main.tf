@@ -1,24 +1,24 @@
 provider "ibm" {
-    ibmcloud_api_key = var.ibmcloud_api_key
-    iaas_classic_username = var.iaas_classic_username
-    iaas_classic_api_key = var.iaas_classic_api_key
-    region = var.region
-    generation = var.generation
+  ibmcloud_api_key      = var.ibmcloud_api_key
+  iaas_classic_username = var.iaas_classic_username
+  iaas_classic_api_key  = var.iaas_classic_api_key
+  region                = var.region
+  generation            = var.generation
 }
 
 locals {
-    cluster_domain = join(".", [ var.cluster_name, var.domain ] )
-    ssh_keys = concat([
-        for key in data.ibm_compute_ssh_key.ssh_key: key.id
+  cluster_domain = join(".", [var.cluster_name, var.domain])
+  ssh_keys = concat([
+    for key in data.ibm_compute_ssh_key.ssh_key : key.id
     ],
     [
-        ibm_compute_ssh_key.cluster_ssh_key.id
-    ])
+      ibm_compute_ssh_key.cluster_ssh_key.id
+  ])
 }
 
 data "ibm_compute_ssh_key" "ssh_key" {
-    count = length(var.ssh_key)
-    label = var.ssh_key[count.index]
+  count = length(var.ssh_key)
+  label = var.ssh_key[count.index]
 }
 
 resource "tls_private_key" "new_ssh_key" {
@@ -27,69 +27,70 @@ resource "tls_private_key" "new_ssh_key" {
 }
 
 resource "ibm_compute_ssh_key" "cluster_ssh_key" {
-    label = local.cluster_domain
-    public_key = tls_private_key.new_ssh_key.public_key_openssh
-    tags = var.tags
+  label      = local.cluster_domain
+  public_key = tls_private_key.new_ssh_key.public_key_openssh
+  tags       = var.tags
 }
 
 module "master" {
-    source = "./modules/master_node"
+  source = "./modules/master_node"
 
-    hostnames = var.master_name
-    domain = local.cluster_domain
-    qty = var.master_qty
-    flavor = var.master_flavor
-    os = var.os_reference
-    datacenter = var.datacenter
-    ssh_id = local.ssh_keys
-    tags = var.tags
+  hostname   = var.master_name
+  domain     = local.cluster_domain
+  qty        = var.master_qty
+  flavor     = var.master_flavor
+  os         = var.os_reference
+  datacenter = var.datacenter
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
 }
 
 module "worker" {
-    source = "./modules/worker_node"
+  source = "./modules/worker_node"
 
-    hostnames = var.worker_name
-    domain = local.cluster_domain
-    qty = var.worker_qty
-    flavor = var.worker_flavor
-    os = var.os_reference
-    datacenter = var.datacenter
-    ssh_id = local.ssh_keys
-    tags = var.tags
+  hostnames  = var.worker_name
+  domain     = local.cluster_domain
+  qty        = var.worker_qty
+  flavor     = var.worker_flavor
+  os         = var.os_reference
+  datacenter = var.datacenter
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
 }
 
 module "install" {
-    source = "./modules/install_node"
+  source = "./modules/install_node"
 
-    hostname = "installer"
-    hostnames = var.master_name
-    domain = local.cluster_domain
-    qty = var.master_qty
-    flavor = var.installer_flavor
-    os = var.installer_os_reference
-    datacenter = var.datacenter
-    ssh_id = local.ssh_keys
-    tags = var.tags
-    ssh_key = tls_private_key.new_ssh_key
+  hostname   = "installer"
+  hostnames  = var.master_name
+  domain     = local.cluster_domain
+  qty        = var.master_qty
+  flavor     = var.installer_flavor
+  os         = var.installer_os_reference
+  datacenter = var.datacenter
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
+  ssh_key    = tls_private_key.new_ssh_key
 }
 
 module "prepare_ansible" {
-    source = "./modules/prepare_ansible"
+  source = "./modules/prepare_ansible"
 
-    rh_user = var.redhat_un
-    rh_pass = var.redhat_pw
-    pool_id = var.openshift_pool_id
-    ssh_key = tls_private_key.new_ssh_key
-    installer = module.install.ips
-    masters = module.master.ips
-    workers = module.worker.ips
-    cluster_domain = local.cluster_domain
+  rh_user        = var.redhat_un
+  rh_pass        = var.redhat_pw
+  pool_id        = var.openshift_pool_id
+  ssh_key        = tls_private_key.new_ssh_key
+  installer      = module.install.ips
+  master         = module.master.ips
+  workers        = module.worker.ips
+  cluster_domain = local.cluster_domain
 }
 
 module "dns" {
-    source = "./modules/dns"
+  source = "./modules/dns"
 
-    domain = var.domain
-    cluster_name = var.cluster_name
-    master = module.master.master_nodes
+  domain       = var.domain
+  cluster_name = var.cluster_name
+  master       = module.master.master_node
+  worker       = module.worker.worker_nodes
 }

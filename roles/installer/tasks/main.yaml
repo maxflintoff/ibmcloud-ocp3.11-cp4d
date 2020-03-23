@@ -13,6 +13,10 @@
     - pyOpenSSL
     - python-lxml
     - git
+    - httpd-tools
+    - java-1.8.0-openjdk-headless
+    - python-passlib
+    - bind-utils
     state: present
 - name: Install ansible
   yum:
@@ -39,13 +43,12 @@
 - name: Adding masters to hosts file
   lineinfile:
     path: /etc/hosts
-    line: "{{item.private_ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
-  loop: "{{ masters_parsed }}"
+    line: "{{master.private_ip}} {{ master.name }}.{{cluster_domain}} {{master.name}}"
 - name: Adding workers to hosts file
   lineinfile:
     path: /etc/hosts
     line: "{{item.private_ip}} {{ item.name }}.{{cluster_domain}} {{item.name}}"
-  loop: "{{ workers_parsed }}"
+  loop: "{{ workers }}"
 - name: Adding installer to hosts file
   lineinfile:
     path: /etc/hosts
@@ -75,6 +78,10 @@
     path: /etc/dnsmasq.conf
     regexp: '^#no-dhcp-interface='
     line: "no-dhcp-interface="
+- name: append address to dnsmasq
+  lineinfile:
+    path: /etc/dnsmasq.conf
+    line: address=/apps.{{ cluster_domain }}/{{ master.private_ip }}
 - name: enabling dnsmasq
   systemd:
     name: dnsmasq

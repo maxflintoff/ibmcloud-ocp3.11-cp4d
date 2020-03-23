@@ -4,6 +4,12 @@
     src: /opt/cp4d/cpd-portworx.tgz
     remote_src: yes
     dest: /opt/cp4d/
+- name: update tag block in image script
+  replace:
+    path: /opt/cp4d/cpd-portworx/bin/px-images.sh
+    regexp: 'localhost\/'
+    replace: ''
+    backup: yes
 - name: creating temporary image dir
   file:
     path: /tmp/cpd-px-images/
@@ -23,6 +29,7 @@
   command: /opt/cp4d/cpd-portworx/bin/px-install.sh -pp Never install
 - name: Install storage classes
   command: /opt/cp4d/cpd-portworx/bin/px-sc.sh
+  ignore_errors: yes
 - name: Copy override files
   copy:
     src: overrides/ 

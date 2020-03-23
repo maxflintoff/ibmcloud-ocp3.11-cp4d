@@ -1,0 +1,14 @@
+- name: run ocp prereqs
+  import_playbook: /opt/openshift/playbooks/prerequisites.yml
+- name: run ocp install
+  import_playbook: /opt/openshift/playbooks/deploy_cluster.yml
+- hosts: masters
+  remote_user: root
+  tasks:
+  - name: setting cluster-admin role
+    command: oc create clusterrolebinding ocpadmin --clusterrole cluster-admin --user ocpadmin
+  ignore_errors: yes
+- hosts: localhost
+  remote_user: root
+  roles:
+  - cp4d_installer

@@ -11,23 +11,20 @@ oreg_auth_password={{rh_pass}}
 openshift_master_default_subdomain=apps.{{cluster_domain}}
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
 openshift_master_htpasswd_users={'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
-openshift_node_set_node_ip=true
+openshift_registry_selector='node-role.kubernetes.io/compute=true'
+etcd_ip={{master.private_ip}}
 
 [nodes:children]
 masters
 compute
 
 [masters]
-{% for item in masters_parsed %}
-{{ item.name }}.{{cluster_domain}} openshift_public_hostname={{item.name}}.{{cluster_domain}} openshift_ip={{item.private_ip}} openshift_node_group_name='node-config-master-infra'
-{% endfor %}
+{{master.name}}.{{cluster_domain}} openshift_ip={{master.private_ip}} openshift_node_group_name='node-config-master-infra'
 
 [etcd]
-{% for item in masters_parsed %}
-{{ item.name }}.{{cluster_domain}}
-{% endfor %}
+{{master.name}}.{{cluster_domain}} openshift_ip={{master.private_ip}}
 
 [compute]
-{% for item in workers_parsed %}
-{{ item.name }}.{{cluster_domain}} openshift_public_hostname={{item.name}}.{{cluster_domain}} openshift_ip={{item.private_ip}} openshift_node_group_name='node-config-compute'
+{% for item in workers %}
+{{item.name}}.{{cluster_domain}} openshift_ip={{item.private_ip}} openshift_node_group_name='node-config-compute'
 {% endfor %}
