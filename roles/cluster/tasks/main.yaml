@@ -12,6 +12,42 @@
     backup: yes
   notify:
     - reload NetworkManager
+- name: make sure devices are managed by NetworkManager
+  ini_file:
+    path: /etc/sysconfig/network-scripts/ifcfg-eth0
+    state: absent
+    no_extra_spaces: yes
+    option: NM_CONTROLLED
+    section: null
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify:
+    - reload NetworkManager
+- name: make sure devices are managed by NetworkManager
+  ini_file:
+    path: /etc/sysconfig/network-scripts/ifcfg-eth1
+    state: absent
+    no_extra_spaces: yes
+    option: NM_CONTROLLED
+    section: null
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify:
+    - reload NetworkManager
+- name: make sure hosts isn't overwritten on restart
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    line: "manage_etc_hosts: False"
+    regexp: "^manage_etc_hosts"
+- name: deploy hosts file
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    mode: 0644
 - name: deploy resolv.conf template
   template:
     src: resolv.conf.j2
@@ -168,24 +204,3 @@
     name: NetworkManager
     state: started
     enabled: yes
-- name: make sure hosts isn't overwritten on restart
-  lineinfile:
-    path: /etc/cloud/cloud.cfg
-    line: "manage_etc_hosts: False"
-    regexp: "^manage_etc_hosts"
-- name: deploy hosts file
-  template:
-    src: hosts.j2
-    dest: /etc/hosts
-    mode: 0644
-- name: ensure file exists before deploy
-  file:
-    path: /etc/origin/node/
-    state: directory
-    mode: 0644
-- name: deploy node origin resolv.conf
-  template:
-    src: originresolv.conf.j2
-    dest: /etc/origin/node/resolv.conf
-    mode: 0644
-

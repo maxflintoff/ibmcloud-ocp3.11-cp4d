@@ -20,6 +20,8 @@
   command: /opt/cp4d/cpd-portworx/bin/px-util initialize
 - name: Load images to nodes
   command: /opt/cp4d/cpd-portworx/bin/px-images.sh -e 'ssh -o StrictHostKeyChecking=no -l root' -d /tmp/cpd-px-images load
+- name: tag image
+  command: ansible all -m command -a "docker tag portworx/px-enterprise-ibm-icpd-oem:2.3.1.1 docker.io/portworx/px-enterprise-ibm-icpd-oem:2.3.1.1"
 - name: edit installer to allow automated install
   lineinfile:
     path: /opt/cp4d/cpd-portworx/bin/px-install.sh

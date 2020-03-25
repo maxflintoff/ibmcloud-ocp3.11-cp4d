@@ -1,0 +1,19 @@
+- name: Create docker-registry pvc
+  command: |
+    cat <<EOF | oc create -f -
+    apiVersion: "v1"
+    kind: "PersistentVolumeClaim"
+    metadata:
+      name: docker-registry
+    spec:
+      accessModes:
+        - "ReadWriteMany"
+      resources:
+        requests:
+          storage: "200Gi"
+      storageClassName: portworx-shared-sc
+    EOF
+- name: Add registry-storage to registry deployment
+  command: oc set volume deploymentconfigs/docker-registry --add --name=registry-storage -t pvc --claim-name=docker-registry --overwrite
+- name: patch deployments to 3 for registry
+  command: oc patch deploymentconfigs/docker-registry -n default -p '{"spec":{"replicas":3}}'
