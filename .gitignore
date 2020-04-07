@@ -31,3 +31,5 @@ override.tf.json
 # Ignore local installer_files contents, this folder is used for storing the necessary files to complete an install
 installer_files/*
 .DS_Store
+# Additionally ignore the CP4D bin if present
+CP4D_EE_Installer_V2.5.bin
