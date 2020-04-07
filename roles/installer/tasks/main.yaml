@@ -17,10 +17,7 @@
     - java-1.8.0-openjdk-headless
     - python-passlib
     - bind-utils
-    state: present
-- name: Install ansible
-  yum:
-    name: ansible
+    - ansible
     state: present
 - name: Update packages
   yum:
@@ -58,35 +55,36 @@
     path: /etc/dnsmasq.conf
     regexp: '^#domain-needed'
     line: "domain-needed"
+  notify: "Restart DNSMasq"
 - name: Adding bogus-priv to dnsmasq.conf
   lineinfile:
     path: /etc/dnsmasq.conf
     regexp: '^#bogus-priv'
     line: "bogus-priv"
+  notify: "Restart DNSMasq"
 - name: Adding listen-address to dnsmasq.conf
   lineinfile:
     path: /etc/dnsmasq.conf
     regexp: '^#listen-address='
     line: "listen-address=127.0.0.1,{{ installer.private_ip }}"
+  notify: "Restart DNSMasq"
 - name: Adding interfaces to dnsmasq.conf
   lineinfile:
     path: /etc/dnsmasq.conf
     regexp: '^#interface='
     line: "interface={{ internal_interface }}"
+  notify: "Restart DNSMasq"
 - name: turn off DHCP
   lineinfile:
     path: /etc/dnsmasq.conf
     regexp: '^#no-dhcp-interface='
     line: "no-dhcp-interface="
+  notify: "Restart DNSMasq"
 - name: append address to dnsmasq
   lineinfile:
     path: /etc/dnsmasq.conf
     line: address=/apps.{{ cluster_domain }}/{{ master.private_ip }}
-- name: enabling dnsmasq
-  systemd:
-    name: dnsmasq
-    enabled: yes
-    state: started
+  notify: "Restart DNSMasq"
 - name: Copy ssh key
   copy:
     src: "{{playbook_dir}}/installer_files/id_rsa"
