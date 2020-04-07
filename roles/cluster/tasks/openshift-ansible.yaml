@@ -1,0 +1,53 @@
+- name: remove RHSM
+  redhat_subscription:
+    state: absent
+    username: "{{ rh_user }}"
+    password: "{{ rh_pass }}"
+- name: edit RHSM files
+  lineinfile:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '^hostname = '
+    line: hostname = subscription.rhn.redhat.com
+- name: edit port RHSM
+  lineinfile:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '^port = '
+    line: port = 443
+- name: edit prefix RHSM
+  lineinfile:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '^prefix = '
+    line: prefix = /subscription
+- name: subscription clean
+  command: subscription-manager clean
+- name: Register as user with subscription manager
+  redhat_subscription:
+    state: present
+    username: "{{ rh_user }}"
+    password: "{{ rh_pass }}"
+    rhsm_baseurl: https://cdn.redhat.com
+    rhsm_repo_ca_cert: "%(ca_cert_dir)sredhat-uep.pem"
+    pool_ids: "{{pool_id}}"
+    force_register: yes
+- name: Disable all RHSM repositories
+  rhsm_repository:
+    name: '*'
+    state: disabled
+- name: Remove all yum repositories
+  yum_repository:
+    name: "*"
+    state: absent
+- name: Enable Repos for OCP
+  rhsm_repository:
+    name:
+    - rhel-7-server-rpms
+    - rhel-7-server-extras-rpms
+    - rhel-7-server-ose-3.11-rpms
+    - rhel-7-server-ansible-2.9-rpms
+    state: present
+- name: reinstall openshift-ansible
+  yum:
+    name: openshift-ansible
+    state: present
+  notify:
+  - reboot machine
