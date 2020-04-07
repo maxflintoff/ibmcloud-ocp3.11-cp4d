@@ -58,28 +58,36 @@
     backup: yes
   notify:
     - reload NetworkManager
+- name: Gather the rpm package facts
+  package_facts:
+    manager: auto
 - name: remove RHSM
   redhat_subscription:
     state: absent
     username: "{{ rh_user }}"
     password: "{{ rh_pass }}"
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: edit RHSM files
   lineinfile:
     path: /etc/rhsm/rhsm.conf
     regexp: '^hostname = '
     line: hostname = subscription.rhn.redhat.com
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: edit port RHSM
   lineinfile:
     path: /etc/rhsm/rhsm.conf
     regexp: '^port = '
     line: port = 443
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: edit prefix RHSM
   lineinfile:
     path: /etc/rhsm/rhsm.conf
     regexp: '^prefix = '
     line: prefix = /subscription
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: subscription clean
   command: subscription-manager clean
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Register as user with subscription manager
   redhat_subscription:
     state: present
@@ -89,14 +97,17 @@
     rhsm_repo_ca_cert: "%(ca_cert_dir)sredhat-uep.pem"
     pool_ids: "{{pool_id}}"
     force_register: yes
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Disable all RHSM repositories
   rhsm_repository:
     name: '*'
     state: disabled
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Remove all yum repositories
   yum_repository:
     name: "*"
     state: absent
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Enable Repos for OCP
   rhsm_repository:
     name:
@@ -105,6 +116,7 @@
     - rhel-7-server-ose-3.11-rpms
     - rhel-7-server-ansible-2.9-rpms
     state: present
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Install Base Packages
   yum:
     name:
@@ -122,16 +134,19 @@
     state: present
   notify:
   - reboot machine
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Update installed Packages
   yum:
     name: "*"
     state: latest
   notify:
   - reboot machine
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Install openshift-ansible
   yum:
     name: openshift-ansible
     state: present
+  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: get docker config
   command: cat /etc/sysconfig/docker-storage
   register: docker_storage
