@@ -2,20 +2,20 @@
 
 This repository houses a set of automation for deploying infrastructure, openshift, and cloud pak for data.
 
-<b>Prerequisites</b>
+## Prerequisites
 
 - Ansible
 - terraform > 0.12
 - [ibmcloud provider](https://github.com/IBM-Cloud/terraform-provider-ibm)
   
-<b>Files required</b>
+## Files required
 
 in a folder in the root of this repository called `installer_files` place 2 files for cloud pak install:
 
 - cloudpak4data-ee-v2.5.0.0.tgz
 - repo.yaml
 
-<b>Variables</b>
+## Variables
 
 There are a few variables that must be set for the install to take place successfully.
 
@@ -35,11 +35,11 @@ Additionally it is recommended to set additional variables:
 - datacenter
 - tags (a list of strings of tags to apply to the infrastructure)
 
-<b>Deployment</b>
+## Deployment
 
 To run this deployment run this series of commands from the root folder
 
-```
+```bash
 terraform init
 terraform plan #check your plan is as expected
 terraform apply
@@ -49,17 +49,18 @@ ansible-playbook main.yaml
 due to some complications with the deployment of ocp the last command must be run from the installer node provisioned during the deployment.
 This command will also be printed at the end of the previous playbook
 
-```
+```bash
 ssh root@<installer_ip> -i <project_dir>/installer_files/id_rsa
 ansible-playbook /opt/installer/main.yaml
 ```
 
-<b>Post Install</b>
+## Post Install
 
 Your cluster will be up and available at a url with this format
 `https://console.apps.<cluster_name>.<domain>`
 
 The default credentials are:
+
 ```
 username: ocpadmin
 password: Ch4ngeM3

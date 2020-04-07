@@ -1,10 +1,30 @@
-# These variables have no defaults and must be set for the script to function
+# Required variables - these must be set for the script to function
 ibmcloud_api_key = "example-api-key-1234"
 iaas_classic_username = "1234567_example_user@example.com"
 iaas_classic_api_key = "example-api-key-1234"
-# Name of an ssh key previously uploaded to IBM Cloud: https://cloud.ibm.com/docs/vpc-on-classic-vsi?topic=vpc-on-classic-vsi-managing-ssh-keys
-ssh_key = [ "example-ssh-key" ]
 domain = "example.com"
 redhat_un = "redhat@example.com"
 redhat_pw = "redhat_password"
 openshift_pool_id = "poolid"
+
+# Recommended variables - you should probably set these but the system will handle it if you don't
+# cluster_name = "cluster"
+# region = "lon02"
+# datacenter = "eu-gb"
+# tags = [""]
+# Name of an ssh key previously uploaded to IBM Cloud: https://cloud.ibm.com/docs/vpc-on-classic-vsi?topic=vpc-on-classic-vsi-managing-ssh-keys
+# ssh_key = [ "example-ssh-key" ]
+
+# Other variables that you can change if you want to. If left commented, they will be populated with the value shown here.
+# os_reference = "REDHAT_7_64"
+# installer_os_reference = "CENTOS_7_64"
+# master_qty = 1
+# master_name = "master"
+# master_flavor = "B1_8X32X100"
+# worker_qty = 3
+# worker_name = "worker"
+# worker_flavor = "B1_32X64X100"
+# resource_group_name = "ocp_resources"
+# generation = "1"
+# installer_flavor = "B1_2X8X100"
+# openshift_password = "Ch4ngeM3"
