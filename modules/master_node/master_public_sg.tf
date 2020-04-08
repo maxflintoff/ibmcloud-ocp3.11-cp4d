@@ -35,6 +35,24 @@ resource "ibm_security_group_rule" "master_public_api" {
   security_group_id = ibm_security_group.master_public_sg.id
 }
 
+resource "ibm_security_group_rule" "master_public_dns_tcp" {
+  direction         = "ingress"
+  port_range_min    = 8053
+  port_range_max    = 8053
+  protocol          = "tcp"
+  security_group_id = ibm_security_group.master_public_sg.id
+  remote_group_id   = var.worker_public_sg.id
+}
+
+resource "ibm_security_group_rule" "master_public_dns_udp" {
+  direction         = "ingress"
+  port_range_min    = 8053
+  port_range_max    = 8053
+  protocol          = "udp"
+  security_group_id = ibm_security_group.master_public_sg.id
+  remote_group_id   = var.worker_public_sg.id
+}
+
 resource "ibm_security_group_rule" "egress_public" {
   direction         = "egress"
   security_group_id = ibm_security_group.master_public_sg.id
