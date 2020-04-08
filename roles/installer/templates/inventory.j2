@@ -13,7 +13,9 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 openshift_master_htpasswd_users={'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
 openshift_registry_selector='node-role.kubernetes.io/compute=true'
 etcd_ip={{master.private_ip}}
-openshift_docker_options=OPTIONS='  --log-opt  max-size=1M --log-opt max-file=3 --insecure-registry 172.30.0.0/16 --log-driver=json-file --signature-verification=false'
+openshift_docker_options="--log-opt  max-size=1M --log-opt max-file=3 --insecure-registry 172.30.0.0/16 --log-driver=json-file"
+os_firewall_use_firewalld=True
+openshift_docker_selinux_enabled=false
 
 [nodes:children]
 masters
