@@ -1,0 +1,54 @@
+# This file is used to apply our docker storage configuration
+- name: stop docker
+  service:
+    name: docker
+    state: stopped
+- name: stop docker-novol-plugin
+  service:
+    name: docker-novolume-plugin
+    state: stopped
+- name: delete docker files
+  file:
+    path: /var/lib/docker
+    state: absent
+  notify: restart docker
+- name: Edit Docker OPTIONS
+  lineinfile:
+    path: /etc/sysconfig/docker
+    regexp: '^OPTIONS='
+    line: OPTIONS='--log-driver=journald --signature-verification=false'
+  notify: restart docker
+- name: enable & start service docker-novolume
+  systemd:
+    name: docker-novolume-plugin
+    enabled: yes
+    state: started
+  notify: restart docker
+- name: set selinux policy
+  selinux:
+    policy: targeted
+    state: enforcing
+  register: selinux_status
+- name: reboot if necessary
+  reboot:
+  when: selinux_status.reboot_required
+- name: configure docker storage
+  copy:
+    content: |
+      DEVS=/dev/xvdc
+      VG=docker-vg
+    dest: /etc/sysconfig/docker-storage-setup
+    mode: u+rw,g+r,o+r
+  notify: restart docker
+- name: Delete existing docker storage configuration
+  file: 
+    path: /etc/sysconfig/docker-storage
+    state: absent
+- name: run docker storage setup
+  command: docker-storage-setup
+- name: extend Docker VG
+  lvol:
+    vg: docker-vg
+    lv: docker-pool
+    size: 60%VG
+  notify: restart docker

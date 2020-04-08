@@ -1,3 +1,4 @@
+# This file is used to recover when the openshift-ansible package isn't properly installed.
 - name: remove RHSM
   redhat_subscription:
     state: absent
@@ -45,9 +46,23 @@
     - rhel-7-server-ose-3.11-rpms
     - rhel-7-server-ansible-2.9-rpms
     state: present
-- name: reinstall openshift-ansible
+- name: reinstall required packages
   yum:
-    name: openshift-ansible
+    name: 
+    - wget
+    - git
+    - net-tools
+    - bind-utils
+    - yum-utils
+    - iptables-services
+    - bridge-utils
+    - bash-completion
+    - kexec-tools
+    - sos
+    - psacct
+    - openshift-ansible
+    - docker-1.13.1
+    - docker-novolume-plugin
     state: present
   notify:
   - reboot machine

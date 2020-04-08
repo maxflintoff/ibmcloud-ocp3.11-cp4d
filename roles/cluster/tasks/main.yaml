@@ -73,9 +73,12 @@
     - sos
     - psacct
     - openshift-ansible
+    - docker-1.13.1
+    - docker-novolume-plugin
     state: present
   notify:
   - reboot machine
+  ignore_errors: yes
 - name: Gather the rpm package facts
   package_facts:
     manager: auto
@@ -92,69 +95,9 @@
   command: cat /etc/sysconfig/docker-storage
   register: docker_storage
   ignore_errors: yes
-- name: Install Docker
-  yum:
-    name:
-    - docker-1.13.1
-    - docker-novolume-plugin
-    state: present
+- name: fix docker storage
+  include_tasks: docker-storage.yaml
   when: docker_storage is not search("dm.thinpooldev")
-- name: stop docker
-  service:
-    name: docker
-    state: stopped
-  when: docker_storage is not search("dm.thinpooldev")
-- name: delete docker files
-  file:
-    path: /var/lib/docker
-    state: absent
-  when: docker_storage is not search("dm.thinpooldev")
-- name: Edit Docker OPTIONS
-  lineinfile:
-    path: /etc/sysconfig/docker
-    regexp: '^OPTIONS='
-    line: OPTIONS='--log-driver=journald --signature-verification=false'
-  notify:
-  - restart docker
-  when: docker_storage is not search("dm.thinpooldev")
-- name: enable & start service docker-novolume
-  systemd:
-    name: docker-novolume-plugin
-    enabled: yes
-    state: started
-  when: docker_storage is not search("dm.thinpooldev")
-- name: set selinux policy
-  selinux:
-    policy: targeted
-    state: enforcing
-  when: docker_storage is not search("dm.thinpooldev")
-- name: configure docker storage
-  copy:
-    content: |
-      DEVS=/dev/xvdc
-      VG=docker-vg
-    dest: /etc/sysconfig/docker-storage-setup
-    mode: u+rw,g+r,o+r
-  when: docker_storage is not search("dm.thinpooldev")
-- name: Delete existing docker storage configuration
-  file: 
-    path: /etc/sysconfig/docker-storage
-    state: absent
-  when: docker_storage is not search("dm.thinpooldev")
-- name: run docker storage setup
-  command: docker-storage-setup
-  when: docker_storage is not search("dm.thinpooldev")
-- name: extend Docker VG
-  lvol:
-    vg: docker-vg
-    lv: docker-pool
-    size: 60%VG
-  when: docker_storage is not search("dm.thinpooldev")
-- name: start docker
-  service:
-    name: docker
-    state: started
-    enabled: yes
 - name: Making sure NetworkManager is started
   service:
     name: NetworkManager
