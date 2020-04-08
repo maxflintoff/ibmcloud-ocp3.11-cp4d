@@ -58,65 +58,6 @@
     backup: yes
   notify:
     - reload NetworkManager
-- name: Gather the rpm package facts
-  package_facts:
-    manager: auto
-- name: remove RHSM
-  redhat_subscription:
-    state: absent
-    username: "{{ rh_user }}"
-    password: "{{ rh_pass }}"
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: edit RHSM files
-  lineinfile:
-    path: /etc/rhsm/rhsm.conf
-    regexp: '^hostname = '
-    line: hostname = subscription.rhn.redhat.com
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: edit port RHSM
-  lineinfile:
-    path: /etc/rhsm/rhsm.conf
-    regexp: '^port = '
-    line: port = 443
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: edit prefix RHSM
-  lineinfile:
-    path: /etc/rhsm/rhsm.conf
-    regexp: '^prefix = '
-    line: prefix = /subscription
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: subscription clean
-  command: subscription-manager clean
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: Register as user with subscription manager
-  redhat_subscription:
-    state: present
-    username: "{{ rh_user }}"
-    password: "{{ rh_pass }}"
-    rhsm_baseurl: https://cdn.redhat.com
-    rhsm_repo_ca_cert: "%(ca_cert_dir)sredhat-uep.pem"
-    pool_ids: "{{pool_id}}"
-    force_register: yes
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: Disable all RHSM repositories
-  rhsm_repository:
-    name: '*'
-    state: disabled
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: Remove all yum repositories
-  yum_repository:
-    name: "*"
-    state: absent
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: Enable Repos for OCP
-  rhsm_repository:
-    name:
-    - rhel-7-server-rpms
-    - rhel-7-server-extras-rpms
-    - rhel-7-server-ose-3.11-rpms
-    - rhel-7-server-ansible-2.9-rpms
-    state: present
-  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Install Base Packages
   yum:
     name:
@@ -131,9 +72,18 @@
     - kexec-tools
     - sos
     - psacct
+    - openshift-ansible
+    - docker-1.13.1
+    - docker-novolume-plugin
     state: present
   notify:
   - reboot machine
+  ignore_errors: yes
+- name: Gather the rpm package facts
+  package_facts:
+    manager: auto
+- name: try to reinstall openshift-ansible
+  include_tasks: openshift-ansible.yaml
   when: "'openshift-ansible' not in ansible_facts.packages"
 - name: Update installed Packages
   yum:
@@ -141,79 +91,13 @@
     state: latest
   notify:
   - reboot machine
-  when: "'openshift-ansible' not in ansible_facts.packages"
-- name: Install openshift-ansible
-  yum:
-    name: openshift-ansible
-    state: present
-  when: "'openshift-ansible' not in ansible_facts.packages"
 - name: get docker config
   command: cat /etc/sysconfig/docker-storage
   register: docker_storage
   ignore_errors: yes
-- name: Install Docker
-  yum:
-    name:
-    - docker-1.13.1
-    - docker-novolume-plugin
-    state: present
+- name: fix docker storage
+  include_tasks: docker-storage.yaml
   when: docker_storage is not search("dm.thinpooldev")
-- name: stop docker
-  service:
-    name: docker
-    state: stopped
-  when: docker_storage is not search("dm.thinpooldev")
-- name: delete docker files
-  file:
-    path: /var/lib/docker
-    state: absent
-  when: docker_storage is not search("dm.thinpooldev")
-- name: Edit Docker OPTIONS
-  lineinfile:
-    path: /etc/sysconfig/docker
-    regexp: '^OPTIONS='
-    line: OPTIONS='--log-driver=journald --signature-verification=false'
-  notify:
-  - restart docker
-  when: docker_storage is not search("dm.thinpooldev")
-- name: enable & start service docker-novolume
-  systemd:
-    name: docker-novolume-plugin
-    enabled: yes
-    state: started
-  when: docker_storage is not search("dm.thinpooldev")
-- name: set selinux policy
-  selinux:
-    policy: targeted
-    state: enforcing
-  when: docker_storage is not search("dm.thinpooldev")
-- name: configure docker storage
-  copy:
-    content: |
-      DEVS=/dev/xvdc
-      VG=docker-vg
-    dest: /etc/sysconfig/docker-storage-setup
-    mode: u+rw,g+r,o+r
-  when: docker_storage is not search("dm.thinpooldev")
-- name: Delete existing docker storage configuration
-  file: 
-    path: /etc/sysconfig/docker-storage
-    state: absent
-  when: docker_storage is not search("dm.thinpooldev")
-- name: run docker storage setup
-  command: docker-storage-setup
-  when: docker_storage is not search("dm.thinpooldev")
-- name: extend Docker VG
-  lvol:
-    vg: docker-vg
-    lv: docker-pool
-    size: 60%VG
-  when: docker_storage is not search("dm.thinpooldev")
-- name: start docker
-  service:
-    name: docker
-    state: started
-    enabled: yes
 - name: Making sure NetworkManager is started
   service:
     name: NetworkManager
