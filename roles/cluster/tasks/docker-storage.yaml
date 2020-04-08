@@ -1,4 +1,8 @@
 # This file is used to apply our docker storage configuration
+#
+# Note: This section is *NOT* repeatable! We avoid the issue by only running
+# this file if the docker storage hasn't already been set up.
+#
 - name: stop docker
   service:
     name: docker

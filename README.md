@@ -7,6 +7,8 @@ This repository houses a set of automation for deploying infrastructure, openshi
 - Ansible
 - terraform > 0.12
 - [ibmcloud provider](https://github.com/IBM-Cloud/terraform-provider-ibm)
+
+Note: you can install the provider by running the included `provider.sh` script. It will install v1.2.5, but this can be changed by editing the appropriate variable within the script.
   
 ## Files required
 
@@ -15,16 +17,18 @@ in a folder in the root of this repository called `installer_files` place 2 file
 - cloudpak4data-ee-v2.5.0.0.tgz
 - repo.yaml
 
+These can be acquired by running the CP4D bin file.
+
 ## Variables
 
 There are a few variables that must be set for the install to take place successfully.
 
-- ibmcloud_api_key
-- iaas_classic_username
-- iaas_classic_api_key
+- [ibmcloud_api_key](https://cloud.ibm.com/docs/iam?topic=iam-userapikey)
+- iaas_classic_username (this is your login for IBM cloud)
+- [iaas_classic_api_key](https://cloud.ibm.com/docs/iam?topic=iam-classic_keys)
 - redhat_un
 - redhat_pw
-- openshift_pool_id (a rhsm pool with the appropriate licenses)
+- [openshift_pool_id](https://access.redhat.com/solutions/253273) (the rhsm pool with the appropriate licenses)
 - domain (a domain that already exists in IBM Cloud)
   
 Additionally it is recommended to set additional variables:

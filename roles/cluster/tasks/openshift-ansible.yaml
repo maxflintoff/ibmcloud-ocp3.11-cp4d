@@ -1,4 +1,6 @@
 # This file is used to recover when the openshift-ansible package isn't properly installed.
+# It will likely have to be run on a first-time setup as well, this is expected.
+#
 - name: remove RHSM
   redhat_subscription:
     state: absent
