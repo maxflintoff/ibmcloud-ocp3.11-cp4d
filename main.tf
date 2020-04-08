@@ -35,14 +35,16 @@ resource "ibm_compute_ssh_key" "cluster_ssh_key" {
 module "master" {
   source = "./modules/master_node"
 
-  hostname   = var.master_name
-  domain     = local.cluster_domain
-  qty        = var.master_qty
-  flavor     = var.master_flavor
-  os         = var.os_reference
-  datacenter = var.datacenter
-  ssh_id     = local.ssh_keys
-  tags       = var.tags
+  hostname          = var.master_name
+  domain            = local.cluster_domain
+  qty               = var.master_qty
+  flavor            = var.master_flavor
+  os                = var.os_reference
+  datacenter        = var.datacenter
+  ssh_id            = local.ssh_keys
+  tags              = var.tags
+  worker_private_sg = module.worker.security_group_private
+  worker_public_sg  = module.worker.security_group_public
 }
 
 module "worker" {

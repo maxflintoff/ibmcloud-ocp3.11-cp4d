@@ -15,3 +15,11 @@ locals {
 output "ips" {
   value = local.ips
 }
+
+output "security_group_public" {
+  value = ibm_security_group.worker_public_sg
+}
+
+output "security_group_private" {
+  value = ibm_security_group.worker_private_sg
+}
