@@ -72,7 +72,6 @@
     - kexec-tools
     - sos
     - psacct
-    - openshift-ansible
     - docker-1.13.1
     - docker-novolume-plugin
     state: present

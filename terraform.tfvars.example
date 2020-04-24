@@ -9,8 +9,8 @@ openshift_pool_id = "poolid"
 
 # Recommended variables - you should probably set these but the system will handle it if you don't
 # cluster_name = "cluster"
-# region = "lon02"
-# datacenter = "eu-gb"
+# region = "eu-gb"
+# datacenter = "lon02"
 # tags = [""]
 # Name of an ssh key previously uploaded to IBM Cloud: https://cloud.ibm.com/docs/vpc-on-classic-vsi?topic=vpc-on-classic-vsi-managing-ssh-keys
 # ssh_key = [ "example-ssh-key" ]

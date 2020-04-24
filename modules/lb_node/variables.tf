@@ -1,4 +1,4 @@
-variable "hostnames" {}
+variable "hostname" {}
 
 variable "qty" {}
 
@@ -14,4 +14,4 @@ variable "tags" {}
 
 variable "domain" {}
 
-variable "worker_subnet" {}
+variable "master_sg" {}

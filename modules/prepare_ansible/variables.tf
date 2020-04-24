@@ -6,3 +6,4 @@ variable "ssh_key" {}
 variable "installer" {}
 variable "cluster_domain" {}
 variable "master" {}
+variable "lb" {}

@@ -14,6 +14,7 @@ locals {
     [
       ibm_compute_ssh_key.cluster_ssh_key.id
   ])
+  lb_count = var.master_qty > 1 ? 1 : 0
 }
 
 data "ibm_compute_ssh_key" "ssh_key" {
@@ -35,29 +36,43 @@ resource "ibm_compute_ssh_key" "cluster_ssh_key" {
 module "master" {
   source = "./modules/master_node"
 
-  hostname          = var.master_name
-  domain            = local.cluster_domain
-  qty               = var.master_qty
-  flavor            = var.master_flavor
-  os                = var.os_reference
-  datacenter        = var.datacenter
-  ssh_id            = local.ssh_keys
-  tags              = var.tags
-  worker_private_sg = module.worker.security_group_private
-  worker_public_sg  = module.worker.security_group_public
+  hostnames     = var.master_name
+  domain        = local.cluster_domain
+  qty           = var.master_qty
+  flavor        = var.master_flavor
+  os            = var.os_reference
+  datacenter    = var.datacenter
+  ssh_id        = local.ssh_keys
+  tags          = var.tags
+  worker_subnet = module.worker.worker_nodes[0].public_subnet
+}
+
+module "lb" {
+  source = "./modules/lb_node"
+
+  hostname   = var.lb_name
+  domain     = local.cluster_domain
+  qty        = local.lb_count
+  flavor     = var.lb_flavor
+  os         = var.os_reference
+  datacenter = var.datacenter
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
+  master_sg  = module.master.security_group
 }
 
 module "worker" {
   source = "./modules/worker_node"
 
-  hostnames  = var.worker_name
-  domain     = local.cluster_domain
-  qty        = var.worker_qty
-  flavor     = var.worker_flavor
-  os         = var.os_reference
-  datacenter = var.datacenter
-  ssh_id     = local.ssh_keys
-  tags       = var.tags
+  hostnames     = var.worker_name
+  domain        = local.cluster_domain
+  qty           = var.worker_qty
+  flavor        = var.worker_flavor
+  os            = var.os_reference
+  datacenter    = var.datacenter
+  ssh_id        = local.ssh_keys
+  tags          = var.tags
+  master_subnet = module.master.master_node[0].public_subnet
 }
 
 module "install" {
@@ -85,6 +100,7 @@ module "prepare_ansible" {
   installer      = module.install.ips
   master         = module.master.ips
   workers        = module.worker.ips
+  lb             = module.lb.ips
   cluster_domain = local.cluster_domain
 }
 
@@ -95,4 +111,6 @@ module "dns" {
   cluster_name = var.cluster_name
   master       = module.master.master_node
   worker       = module.worker.worker_nodes
+  lb           = module.lb.lb_node
+  master_qty   = var.master_qty
 }

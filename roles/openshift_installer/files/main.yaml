@@ -2,7 +2,7 @@
   import_playbook: /opt/openshift/playbooks/prerequisites.yml
 - name: run ocp install
   import_playbook: /opt/openshift/playbooks/deploy_cluster.yml
-- hosts: masters
+- hosts: masters[0]
   remote_user: root
   tasks:
   - name: setting cluster-admin role

@@ -10,9 +10,15 @@
 - name: extract docker registry
   command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
   register: docker_registry
+- name: print registry
+  debug:
+    msg: "{{docker_registry.stdout}}"
 - name: get token
   command: oc whoami -t
   register: oc_token
+- name: print token
+  debug:
+    msg: "{{oc_token.stdout}}"
 - name: Run lite adm setup
   command: bin/cpd-linux adm -r repo.yaml -a lite -n zen --apply --accept-all-licenses
   args:
@@ -22,16 +28,17 @@
   ignore_errors: yes
 - name: Run lite install
   command: |
-    bin/cpd-linux -r repo.yaml \ 
-    -a lite \
-    -n zen \
-    -c portworx-shared-gp \
-    -o cpd-portworx/overrides/cp-override.yaml \
-    --transfer-image-to {{docker_registry.stdout}}/zen \
-    --cluster-pull-prefix docker-registry.default.svc:5000/zen \
-    --target-registry-username ocadmin \
-    --target-registry-password {{oc_token.stdout}} \
-    --accept-all-licenses \
+    bin/cpd-linux
+    -r repo.yaml
+    -a lite
+    -n zen
+    -c portworx-shared-gp
+    -o cpd-portworx/overrides/cp-override.yaml
+    --transfer-image-to {{docker_registry.stdout}}/zen
+    --cluster-pull-prefix docker-registry.default.svc:5000/zen
+    --target-registry-username ocadmin
+    --target-registry-password {{oc_token.stdout}}
+    --accept-all-licenses
     --insecure-skip-tls-verify
   args:
     chdir: /opt/cp4d

@@ -2,7 +2,7 @@
   include: installer_files.yaml
 - name: install portworx
   include: portworx_install.yaml
-- name: load assembly installer
-  include: lite_install.yaml
 - name: update registry deployment
   include: registry_setup.yaml
+- name: load assembly installer
+  include: lite_install.yaml

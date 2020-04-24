@@ -1,7 +1,7 @@
-resource "ibm_compute_vm_instance" "workers" {
+resource "ibm_compute_vm_instance" "lb" {
   count = var.qty
 
-  hostname                   = element(var.hostnames, count.index)
+  hostname                   = var.hostname
   domain                     = var.domain
   flavor_key_name            = var.flavor
   os_reference_code          = var.os
@@ -10,7 +10,7 @@ resource "ibm_compute_vm_instance" "workers" {
   ssh_key_ids                = var.ssh_id
   local_disk                 = false
   tags                       = var.tags
-  disks                      = [200, 1000]
-  private_security_group_ids = [ibm_security_group.worker_sg.id]
-  public_security_group_ids  = [ibm_security_group.worker_sg.id]
+  disks                      = [100]
+  private_security_group_ids = [var.master_sg.id]
+  public_security_group_ids  = [var.master_sg.id]
 }

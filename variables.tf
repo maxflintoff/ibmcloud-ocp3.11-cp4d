@@ -59,12 +59,14 @@ variable "installer_os_reference" {
 
 variable "master_qty" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "master_name" {
-  type    = string
-  default = "master"
+  type = list(string)
+  default = [
+    "master1", "master2", "master3"
+  ]
 }
 
 variable "tags" {
@@ -112,4 +114,14 @@ variable "installer_flavor" {
 variable "openshift_password" {
   type    = string
   default = "Ch4ngeM3"
+}
+
+variable "lb_name" {
+  type    = string
+  default = "lb"
+}
+
+variable "lb_flavor" {
+  type    = string
+  default = "B1_2X8X100"
 }
