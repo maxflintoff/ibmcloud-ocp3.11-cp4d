@@ -1,3 +1,10 @@
+- name: Disallow password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+  notify: restart ssh
 - name: make sure line 'dns=none' is set in /etc/NetworkManager/NetworkManager.conf
   ini_file:
     path: /etc/NetworkManager/NetworkManager.conf
