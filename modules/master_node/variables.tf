@@ -14,4 +14,4 @@ variable "tags" {}
 
 variable "domain" {}
 
-variable "worker_subnet" {}
+variable "worker" {}
