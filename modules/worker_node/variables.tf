@@ -14,4 +14,4 @@ variable "tags" {}
 
 variable "domain" {}
 
-variable "master_subnet" {}
+variable "master" {}

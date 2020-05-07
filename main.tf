@@ -72,7 +72,7 @@ module "worker" {
   datacenter    = var.datacenter
   ssh_id        = local.ssh_keys
   tags          = var.tags
-  master_subnet = module.master.master_node[0].public_subnet
+  master = module.master.master_node
 }
 
 module "install" {
