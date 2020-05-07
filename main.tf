@@ -73,6 +73,7 @@ module "worker" {
   ssh_id        = local.ssh_keys
   tags          = var.tags
   master = module.master.master_node
+  lb = module.lb.lb_node
 }
 
 module "install" {

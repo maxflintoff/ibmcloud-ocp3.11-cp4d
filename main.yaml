@@ -14,4 +14,4 @@
   tasks:
   - debug:
       msg: | 
-        Now ssh to the installer and run the last playbook `ssh root@{{installer.public_ip}} -i {{playbook_dir}}/installer_files/id_rsa ansible-playbook /opt/installer/main.yaml`
+        Now ssh to the installer and run the last playbook `ssh root@{{installer.public_ip}} -i {{playbook_dir}}/installer_files/id_rsa "tmux new -d -s ocp-install 'ansible-playbook /opt/installer/main.yaml' ; read"`

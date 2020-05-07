@@ -116,7 +116,7 @@
     mode: '0400'
 - name: copy public key
   copy:
-    src: "{{playbook_dir}}/installer_files/id_rsa"
+    src: "{{playbook_dir}}/installer_files/id_rsa.pub"
     dest: /root/.ssh/id_rsa.pub    
 - name: install client tools
   unarchive:

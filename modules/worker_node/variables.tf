@@ -15,3 +15,5 @@ variable "tags" {}
 variable "domain" {}
 
 variable "master" {}
+
+variable "lb" {}

@@ -30,6 +30,16 @@ resource "ibm_security_group_rule" "worker_sdn_master" {
   remote_ip         = var.master[count.index].ipv4_address
 }
 
+resource "ibm_security_group_rule" "worker_sdn_lb" {
+  count = length(var.lb)
+  direction         = "ingress"
+  port_range_min    = 4789
+  port_range_max    = 4789
+  protocol          = "udp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.lb[count.index].ipv4_address
+}
+
 resource "ibm_security_group_rule" "worker_kubelet" {
   count = length(var.master)
   direction         = "ingress"
@@ -38,6 +48,16 @@ resource "ibm_security_group_rule" "worker_kubelet" {
   protocol          = "tcp"
   security_group_id = ibm_security_group.worker_sg.id
   remote_ip         = var.master[count.index].ipv4_address
+}
+
+resource "ibm_security_group_rule" "worker_kubelet_lb" {
+  count = length(var.lb)
+  direction         = "ingress"
+  port_range_min    = 10250
+  port_range_max    = 10250
+  protocol          = "tcp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.lb[count.index].ipv4_address
 }
 
 resource "ibm_security_group_rule" "worker_https" {
@@ -82,6 +102,16 @@ resource "ibm_security_group_rule" "worker_portworx_master" {
   protocol          = "tcp"
   security_group_id = ibm_security_group.worker_sg.id
   remote_ip         = var.master[count.index].ipv4_address
+}
+
+resource "ibm_security_group_rule" "worker_portworx_lb" {
+  count = length(var.lb)
+  direction         = "ingress"
+  port_range_min    = 9001
+  port_range_max    = 9022
+  protocol          = "tcp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.lb[count.index].ipv4_address
 }
 
 resource "ibm_security_group_rule" "worker_portworx_udp_self" {
