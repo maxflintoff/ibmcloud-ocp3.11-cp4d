@@ -36,15 +36,16 @@ resource "ibm_compute_ssh_key" "cluster_ssh_key" {
 module "master" {
   source = "./modules/master_node"
 
-  hostnames     = var.master_name
-  domain        = local.cluster_domain
-  qty           = var.master_qty
-  flavor        = var.master_flavor
-  os            = var.os_reference
-  datacenter    = var.datacenter
-  ssh_id        = local.ssh_keys
-  tags          = var.tags
-  worker = module.worker.worker_nodes
+  hostnames  = var.master_name
+  domain     = local.cluster_domain
+  qty        = var.master_qty
+  flavor     = var.master_flavor
+  os         = var.os_reference
+  datacenter = var.datacenter
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
+  worker     = module.worker.worker_nodes
+  lb         = module.lb.lb_node
 }
 
 module "lb" {
@@ -64,16 +65,16 @@ module "lb" {
 module "worker" {
   source = "./modules/worker_node"
 
-  hostnames     = var.worker_name
-  domain        = local.cluster_domain
-  qty           = var.worker_qty
-  flavor        = var.worker_flavor
-  os            = var.os_reference
-  datacenter    = var.datacenter
-  ssh_id        = local.ssh_keys
-  tags          = var.tags
-  master = module.master.master_node
-  lb = module.lb.lb_node
+  hostnames  = var.worker_name
+  domain     = local.cluster_domain
+  qty        = var.worker_qty
+  flavor     = var.worker_flavor
+  os         = var.os_reference
+  datacenter = var.datacenter
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
+  master     = module.master.master_node
+  lb         = module.lb.lb_node
 }
 
 module "install" {

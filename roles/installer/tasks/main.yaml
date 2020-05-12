@@ -48,6 +48,11 @@
     group: root
     mode: 0644
     backup: yes
+- name: Set hosts to not auto-update
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    line: "manage_etc_hosts: False"
+    regexp: "^manage_etc_hosts"
 - name: Adding masters to hosts file
   lineinfile:
     path: /etc/hosts

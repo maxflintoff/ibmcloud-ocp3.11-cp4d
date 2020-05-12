@@ -21,7 +21,7 @@ resource "ibm_security_group_rule" "worker_sdn_self" {
 }
 
 resource "ibm_security_group_rule" "worker_sdn_master" {
-  count = length(var.master)
+  count             = length(var.master)
   direction         = "ingress"
   port_range_min    = 4789
   port_range_max    = 4789
@@ -31,7 +31,7 @@ resource "ibm_security_group_rule" "worker_sdn_master" {
 }
 
 resource "ibm_security_group_rule" "worker_sdn_lb" {
-  count = length(var.lb)
+  count             = length(var.lb)
   direction         = "ingress"
   port_range_min    = 4789
   port_range_max    = 4789
@@ -41,7 +41,7 @@ resource "ibm_security_group_rule" "worker_sdn_lb" {
 }
 
 resource "ibm_security_group_rule" "worker_kubelet" {
-  count = length(var.master)
+  count             = length(var.master)
   direction         = "ingress"
   port_range_min    = 10250
   port_range_max    = 10250
@@ -51,7 +51,7 @@ resource "ibm_security_group_rule" "worker_kubelet" {
 }
 
 resource "ibm_security_group_rule" "worker_kubelet_lb" {
-  count = length(var.lb)
+  count             = length(var.lb)
   direction         = "ingress"
   port_range_min    = 10250
   port_range_max    = 10250
@@ -95,7 +95,7 @@ resource "ibm_security_group_rule" "worker_portworx_self" {
 }
 
 resource "ibm_security_group_rule" "worker_portworx_master" {
-  count = length(var.master)
+  count             = length(var.master)
   direction         = "ingress"
   port_range_min    = 9001
   port_range_max    = 9022
@@ -105,7 +105,7 @@ resource "ibm_security_group_rule" "worker_portworx_master" {
 }
 
 resource "ibm_security_group_rule" "worker_portworx_lb" {
-  count = length(var.lb)
+  count             = length(var.lb)
   direction         = "ingress"
   port_range_min    = 9001
   port_range_max    = 9022
@@ -124,7 +124,7 @@ resource "ibm_security_group_rule" "worker_portworx_udp_self" {
 }
 
 resource "ibm_security_group_rule" "worker_portworx_udp_master" {
-  count = length(var.master)
+  count             = length(var.master)
   direction         = "ingress"
   port_range_min    = 9002
   port_range_max    = 9002

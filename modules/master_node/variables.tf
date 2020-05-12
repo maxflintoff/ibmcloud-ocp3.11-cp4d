@@ -15,3 +15,5 @@ variable "tags" {}
 variable "domain" {}
 
 variable "worker" {}
+
+variable "lb" {}
