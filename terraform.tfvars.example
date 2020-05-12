@@ -7,7 +7,7 @@ redhat_un = "redhat@example.com"
 redhat_pw = "redhat_password"
 openshift_pool_id = "poolid"
 
-# Recommended variables - you should probably set these but the system will handle it if you don't
+# Recommended variables - you should probably set these but they will be set as shown if you leave them commented
 # cluster_name = "cluster"
 # region = "eu-gb"
 # datacenter = "lon02"
@@ -27,4 +27,6 @@ openshift_pool_id = "poolid"
 # resource_group_name = "ocp_resources"
 # generation = "1"
 # installer_flavor = "B1_2X8X100"
+
+# Password cannot currently be set using this variable
 # openshift_password = "Ch4ngeM3"

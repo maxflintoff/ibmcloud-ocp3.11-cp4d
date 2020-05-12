@@ -51,7 +51,8 @@ ansible-playbook main.yaml
 ```
 
 due to some complications with the deployment of ocp the last command must be run from the installer node provisioned during the deployment.
-This command will also be printed at the end of the previous playbook
+This command will also be printed at the end of the previous playbook as a one-liner
+It is recommended to run this in a `tmux` session as it can take a long time to complete
 
 ```bash
 ssh root@<installer_ip> -i <project_dir>/installer_files/id_rsa
