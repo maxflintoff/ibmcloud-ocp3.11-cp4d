@@ -130,7 +130,6 @@ resource "ibm_security_group_rule" "master_kubelet_lb" {
 }
 
 resource "ibm_security_group_rule" "master_https" {
-  count             = length(var.lb) > 0 ? 0 : 1
   direction         = "ingress"
   port_range_min    = 443
   port_range_max    = 443
@@ -139,7 +138,6 @@ resource "ibm_security_group_rule" "master_https" {
 }
 
 resource "ibm_security_group_rule" "master_http" {
-  count             = length(var.lb) > 0 ? 0 : 1
   direction         = "ingress"
   port_range_min    = 80
   port_range_max    = 80
