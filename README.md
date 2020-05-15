@@ -44,9 +44,11 @@ Additionally it is recommended to set additional variables:
 To run this deployment run this series of commands from the root folder
 
 ```bash
+# Optional commands
 terraform init
 terraform plan #check your plan is as expected
-terraform apply
+
+# the first thing the ansible playbook does is run the terraform to provision your infrastructure
 ansible-playbook main.yaml
 ```
 

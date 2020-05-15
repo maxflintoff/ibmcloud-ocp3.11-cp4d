@@ -1,3 +1,6 @@
+- hosts: localhost
+  roles:
+  - terraform
 - hosts: installer
   remote_user: root
   roles:
