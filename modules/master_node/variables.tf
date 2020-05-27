@@ -1,19 +1,12 @@
 variable "hostnames" {}
-
 variable "qty" {}
-
 variable "flavor" {}
-
 variable "os" {}
-
-variable "datacenter" {}
-
 variable "ssh_id" {}
-
 variable "tags" {}
-
 variable "domain" {}
-
-variable "worker" {}
-
-variable "lb" {}
+variable "datacenter" {}
+variable "public_vlan" {}
+variable "private_vlan" {}
+variable "public_subnet" {}
+variable "private_subnet" {}

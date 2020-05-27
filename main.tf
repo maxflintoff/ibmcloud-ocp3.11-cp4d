@@ -31,50 +31,15 @@ resource "ibm_compute_ssh_key" "cluster_ssh_key" {
   label      = local.cluster_domain
   public_key = tls_private_key.new_ssh_key.public_key_openssh
   tags       = var.tags
+  notes = "created by terraform"
 }
 
-module "master" {
-  source = "./modules/master_node"
+module "vlan" {
+  source = "./modules/vlan"
 
-  hostnames  = var.master_name
-  domain     = local.cluster_domain
-  qty        = var.master_qty
-  flavor     = var.master_flavor
-  os         = var.os_reference
+  cluster_name = var.cluster_name
   datacenter = var.datacenter
-  ssh_id     = local.ssh_keys
-  tags       = var.tags
-  worker     = module.worker.worker_nodes
-  lb         = module.lb.lb_node
-}
-
-module "lb" {
-  source = "./modules/lb_node"
-
-  hostname   = var.lb_name
-  domain     = local.cluster_domain
-  qty        = local.lb_count
-  flavor     = var.lb_flavor
-  os         = var.os_reference
-  datacenter = var.datacenter
-  ssh_id     = local.ssh_keys
-  tags       = var.tags
-  master_sg  = module.master.security_group
-}
-
-module "worker" {
-  source = "./modules/worker_node"
-
-  hostnames  = var.worker_name
-  domain     = local.cluster_domain
-  qty        = var.worker_qty
-  flavor     = var.worker_flavor
-  os         = var.os_reference
-  datacenter = var.datacenter
-  ssh_id     = local.ssh_keys
-  tags       = var.tags
-  master     = module.master.master_node
-  lb         = module.lb.lb_node
+  tags = var.tags
 }
 
 module "install" {
@@ -86,10 +51,64 @@ module "install" {
   qty        = var.master_qty
   flavor     = var.installer_flavor
   os         = var.installer_os_reference
-  datacenter = var.datacenter
   ssh_id     = local.ssh_keys
   tags       = var.tags
+  datacenter = var.datacenter
+  public_vlan = module.vlan.public_vlan
+  private_vlan = module.vlan.private_vlan
   ssh_key    = tls_private_key.new_ssh_key
+}
+
+module "master" {
+  source = "./modules/master_node"
+
+  hostnames  = var.master_name
+  domain     = local.cluster_domain
+  qty        = var.master_qty
+  flavor     = var.master_flavor
+  os         = var.os_reference
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
+  datacenter = var.datacenter
+  public_vlan = module.vlan.public_vlan
+  private_vlan = module.vlan.private_vlan
+  public_subnet = module.install.subnets.public
+  private_subnet = module.install.subnets.private
+}
+
+module "lb" {
+  source = "./modules/lb_node"
+
+  hostname   = var.lb_name
+  domain     = local.cluster_domain
+  qty        = local.lb_count
+  flavor     = var.lb_flavor
+  os         = var.os_reference
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
+  datacenter = var.datacenter
+  master_sg  = module.master.security_group
+  public_vlan = module.vlan.public_vlan
+  private_vlan = module.vlan.private_vlan
+  public_subnet = module.install.subnets.public
+  private_subnet = module.install.subnets.private
+}
+
+module "worker" {
+  source = "./modules/worker_node"
+
+  hostnames  = var.worker_name
+  domain     = local.cluster_domain
+  qty        = var.worker_qty
+  flavor     = var.worker_flavor
+  os         = var.os_reference
+  ssh_id     = local.ssh_keys
+  tags       = var.tags
+  datacenter = var.datacenter
+  public_vlan = module.vlan.public_vlan
+  private_vlan = module.vlan.private_vlan
+  public_subnet = module.install.subnets.public
+  private_subnet = module.install.subnets.private
 }
 
 module "prepare_ansible" {
