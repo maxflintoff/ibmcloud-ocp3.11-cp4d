@@ -53,3 +53,15 @@ openshift_master_cluster_public_hostname={{lb[0].name}}.{{cluster_domain}}
 {% for item in workers %}
 {{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-compute'
 {% endfor %}
+
+# below is a helper inventory set for running additional tasks
+[workers] 
+{% for item in workers %}
+{{item.name}}.{{cluster_domain}}
+{% endfor %}
+
+[all:vars]
+wsl_install={{wsl_install}}
+wkc_install={{wkc_install}}
+wkc_patch={{wkc_patch}}
+namespace={{namespace}}

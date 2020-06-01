@@ -125,3 +125,23 @@ variable "lb_flavor" {
   type    = string
   default = "B1_2X8X100"
 }
+
+variable "wsl_install" {
+  type    = string
+  default = false
+}
+
+variable "wkc_install" {
+  type    = string
+  default = false
+}
+
+variable "wkc_patch" {
+  type    = string
+  default = false
+}
+
+variable "namespace" {
+  type    = string
+  default = "zen"
+}

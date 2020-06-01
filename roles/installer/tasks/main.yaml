@@ -1,3 +1,6 @@
+- name: load vars
+  include_vars:
+    dir: "{{playbook_dir}}/installer_files/group_vars"
 - name: Disallow password authentication
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -106,13 +109,13 @@
   lineinfile:
     path: /etc/dnsmasq.conf
     line: address=/apps.{{ cluster_domain }}/{{ master[0].public_ip }}
-  when: "{{master|length == 1}}"
+  when: master|length == 1
   notify: "Restart DNSMasq"
 - name: append LB address to dnsmasq
   lineinfile:
     path: /etc/dnsmasq.conf
     line: address=/apps.{{ cluster_domain }}/{{ lb[0].public_ip }}
-  when: "{{lb|length == 1}}"
+  when: lb|length == 1
   notify: "Restart DNSMasq"
 - name: Copy ssh key
   copy:

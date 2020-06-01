@@ -1,3 +1,6 @@
+- name: load vars
+  include_vars:
+    dir: "{{playbook_dir}}/installer_files/group_vars"
 - name: setup known hosts
   shell:  |
     ssh-keyscan {{ item.name }}.{{ cluster_domain }} >> /root/.ssh/known_hosts
