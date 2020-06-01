@@ -1,6 +1,6 @@
 # Cloud Pak for Data installer for IBM Cloud
 
-This repository houses a set of automation for deploying infrastructure, openshift, and cloud pak for data.
+This repository houses a set of automation for deploying infrastructure, openshift 3.11, portworx, and cloud pak for data.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ in a folder in the root of this repository called `installer_files` place 2 file
 - cloudpak4data-ee-v2.5.0.0.tgz
 - repo.yaml
 
-These can be acquired by running the CP4D bin file.
+These can be acquired by running the CP4D bin file. The repo.yaml should be completed with your details so that installation of the cloud pak is successful.
 
 ## Variables
 
@@ -67,6 +67,7 @@ Your cluster will be up and available at a url with this format
 `https://console.apps.<cluster_name>.<domain>`
 
 The default credentials are:
+currently the password is unable to be changed until after the cloud pak is installed.
 
 ```
 username: ocpadmin
