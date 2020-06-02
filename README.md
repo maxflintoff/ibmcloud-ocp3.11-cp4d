@@ -41,6 +41,8 @@ Additionally it is recommended to set additional variables:
 
 ## Deployment
 
+**If you intend to use the portworx instance as your primary storage method you must deploy a minimum of 3 worker nodes**
+
 To run this deployment run this series of commands from the root folder
 
 ```bash
