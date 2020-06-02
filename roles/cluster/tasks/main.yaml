@@ -107,6 +107,11 @@
 - name: fix docker storage
   include_tasks: docker-storage.yaml
   when: docker_storage is not search("dm.thinpooldev")
+- name: restart docker (to ensure storage options are detected for the OCP install)
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
 - name: Making sure NetworkManager is started
   service:
     name: NetworkManager

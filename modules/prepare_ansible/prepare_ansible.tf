@@ -30,6 +30,7 @@ wsl_install: ${var.wsl_install}
 wkc_install: ${var.wkc_install}
 wkc_patch: ${var.wkc_patch}
 namespace: ${var.namespace}
+subnet: ${var.subnet}
 EOT
   filename = "${path.root}/installer_files/group_vars/all.yaml"
 }

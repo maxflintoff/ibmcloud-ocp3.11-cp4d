@@ -127,6 +127,7 @@ module "prepare_ansible" {
   wkc_install    = var.wkc_install
   wkc_patch      = var.wkc_patch
   namespace      = var.namespace
+  subnet         = module.install.subnets.public
 }
 
 module "dns" {

@@ -20,6 +20,11 @@
     - include_role:
         name: wkc_configure
       when: wkc_install == True
+- hosts: workers
+  remote_user: root
+  tasks:
+    - include_role:
+        name: portworx_configure
 - hosts: localhost
   remote_user: root
   roles:
