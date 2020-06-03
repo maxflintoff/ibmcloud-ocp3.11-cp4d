@@ -27,6 +27,7 @@
 - name: Run wkc patch 1
   command: |
     bin/cpd-linux
+    patch
     -r repo.yaml
     -a wkc
     -n {{namespace}}
@@ -39,10 +40,11 @@
     --insecure-skip-tls-verify
   args:
     chdir: /opt/cp4d
-  when: wkc_patch is true
+  when: wkc_patch == True
 - name: Run wkc patch 2
   command: |
     bin/cpd-linux
+    patch
     -r repo.yaml
     -a wkc
     -n {{namespace}}
@@ -55,6 +57,6 @@
     --insecure-skip-tls-verify
   args:
     chdir: /opt/cp4d
-  when: wkc_patch is true
+  when: wkc_patch == True
 - name: apply patch file
   command: oc patch deployment wkc-glossary-service -n {{namespace}} -p "$(cat /opt/installer/roles/wkc_configure/files/wkc_glossary_service_patch.yaml)"
