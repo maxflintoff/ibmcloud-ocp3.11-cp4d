@@ -58,5 +58,3 @@
   args:
     chdir: /opt/cp4d
   when: wkc_patch == True
-- name: apply patch file
-  command: oc patch deployment wkc-glossary-service -n {{namespace}} -p "$(cat /opt/installer/roles/wkc_configure/files/wkc_glossary_service_patch.yaml)"
