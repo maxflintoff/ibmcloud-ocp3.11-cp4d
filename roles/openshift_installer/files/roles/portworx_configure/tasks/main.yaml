@@ -1,3 +1,7 @@
+- name: install kernel headers
+  yum:
+    name: kernel-devel
+    state: present
 - name: create portworx zone
   firewalld:
     zone: portworx
