@@ -1,4 +1,0 @@
-- name: set vm.max_map_count on workers
-  sysctl:
-    name: vm.max_map_count
-    value: "262144"
