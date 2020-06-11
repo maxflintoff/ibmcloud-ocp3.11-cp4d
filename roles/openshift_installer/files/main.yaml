@@ -12,14 +12,8 @@
   remote_user: root
   tasks:
     - include_role:
-        name: wsl_configure
-      when: wsl_install == True
-- hosts: workers
-  remote_user: root
-  tasks:
-    - include_role:
         name: wkc_configure
-      when: wkc_install == True
+      when: wkc_install == True or wsl_install == True
 - hosts: workers
   remote_user: root
   tasks:

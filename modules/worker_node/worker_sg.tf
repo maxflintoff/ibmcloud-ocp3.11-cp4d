@@ -81,6 +81,60 @@ resource "ibm_security_group_rule" "worker_portworx_lighthouse" {
   remote_ip         = var.public_subnet
 }
 
+resource "ibm_security_group_rule" "worker_nfs_portmapper" {
+  direction         = "ingress"
+  port_range_min    = 111
+  port_range_max    = 111
+  protocol          = "tcp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
+resource "ibm_security_group_rule" "worker_nfs_portmapper_udp" {
+  direction         = "ingress"
+  port_range_min    = 111
+  port_range_max    = 111
+  protocol          = "udp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
+resource "ibm_security_group_rule" "worker_nfs_service" {
+  direction         = "ingress"
+  port_range_min    = 2049
+  port_range_max    = 2049
+  protocol          = "tcp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
+resource "ibm_security_group_rule" "worker_nfs_service_udp" {
+  direction         = "ingress"
+  port_range_min    = 2049
+  port_range_max    = 2049
+  protocol          = "udp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
+resource "ibm_security_group_rule" "worker_nfs_mountd" {
+  direction         = "ingress"
+  port_range_min    = 20048
+  port_range_max    = 20048
+  protocol          = "tcp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
+resource "ibm_security_group_rule" "worker_nfs_mountd_udp" {
+  direction         = "ingress"
+  port_range_min    = 20048
+  port_range_max    = 20048
+  protocol          = "udp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
 resource "ibm_security_group_rule" "egress" {
   direction         = "egress"
   security_group_id = ibm_security_group.worker_sg.id
