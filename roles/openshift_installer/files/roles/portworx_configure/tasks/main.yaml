@@ -2,9 +2,9 @@
   yum:
     name: kernel-devel
     state: present
-- name: create portworx zone
+- name: create cluster zone
   firewalld:
-    zone: portworx
+    zone: cluster
     permanent: yes
     state: present
   register: zone
@@ -13,28 +13,28 @@
   when: zone.changed == true
 - name: add subnet to firewalld zone
   firewalld:
-    zone: portworx
+    zone: cluster
     permanent: yes
     immediate: no
     state: enabled
     source: "{{subnet}}"
-- name: add tcp port range to portworx zone
+- name: add tcp port range to cluster zone
   firewalld:
-    zone: portworx
+    zone: cluster
     permanent: yes
     immediate: no
     state: enabled
     port: 9001-9022/tcp
-- name: add udp port to portworx zone
+- name: add udp port to cluster zone
   firewalld:
-    zone: portworx
+    zone: cluster
     permanent: yes
     immediate: no
     state: enabled
     port: 9002/udp
-- name: add nfs ports to portworx zone
+- name: add nfs ports to cluster zone
   firewalld:
-    zone: portworx
+    zone: cluster
     permanent: yes
     immediate: no
     state: enabled
