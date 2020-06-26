@@ -1,3 +1,6 @@
+- name: load vars
+  include_vars:
+    dir: "{{playbook_dir}}/installer_files/group_vars"
 - name: Disallow password authentication
   lineinfile:
     path: /etc/ssh/sshd_config

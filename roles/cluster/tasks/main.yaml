@@ -1,3 +1,6 @@
+- name: load vars
+  include_vars:
+    dir: "{{playbook_dir}}/installer_files/group_vars"
 - name: Disallow password authentication
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -80,7 +83,6 @@
     - sos
     - psacct
     - docker-1.13.1
-    - docker-novolume-plugin
     state: present
   notify:
   - reboot machine
@@ -97,15 +99,14 @@
     state: latest
   notify:
   - reboot machine
-- name: get docker config
-  command: cat /etc/sysconfig/docker-storage
-  register: docker_storage
-  ignore_errors: yes
-- name: fix docker storage
-  include_tasks: docker-storage.yaml
-  when: docker_storage is not search("dm.thinpooldev")
 - name: Making sure NetworkManager is started
   service:
     name: NetworkManager
     state: started
     enabled: yes
+- name: Deploy systemctl configuration
+  copy:
+    src: 42-cp4d.conf
+    dest: /etc/sysctl.d/42-cp4d.conf
+- name: load sysctl
+  command: sysctl -p /etc/sysctl.d/42-cp4d.conf

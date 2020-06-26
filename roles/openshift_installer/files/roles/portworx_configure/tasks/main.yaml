@@ -1,0 +1,77 @@
+- name: install kernel headers
+  yum:
+    name: kernel-devel
+    state: present
+- name: create cluster zone
+  firewalld:
+    zone: cluster
+    permanent: yes
+    state: present
+  register: zone
+- name: reload on zone creation
+  command: firewall-cmd --reload
+  when: zone.changed == true
+- name: add subnet to firewalld zone
+  firewalld:
+    zone: cluster
+    permanent: yes
+    immediate: no
+    state: enabled
+    source: "{{subnet}}"
+- name: add tcp port range to cluster zone
+  firewalld:
+    zone: cluster
+    permanent: yes
+    immediate: no
+    state: enabled
+    port: 9001-9022/tcp
+- name: add udp port to cluster zone
+  firewalld:
+    zone: cluster
+    permanent: yes
+    immediate: no
+    state: enabled
+    port: 9002/udp
+- name: add nfs ports to cluster zone
+  firewalld:
+    zone: cluster
+    permanent: yes
+    immediate: no
+    state: enabled
+    port: "{{item}}"
+  loop:
+    - 111/tcp
+    - 2049/tcp
+    - 9023/tcp
+    - 9025/tcp
+    - 9026/tcp
+    - 20048/tcp
+    - 111/udp
+    - 2049/udp
+    - 9024/udp
+    - 20048/udp
+- name: restart firewalld
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: firewalld
+- name: adjust lines in nfs config
+  lineinfile:
+    line: LOCKD_TCPPORT=9023
+    path: /etc/sysconfig/nfs
+    regexp: '^#LOCKD_TCPPORT'
+- name: adjust lines in nfs config
+  lineinfile:
+    line: LOCKD_UDPPORT=9024
+    path: /etc/sysconfig/nfs
+    regexp: '^#LOCKD_UDPPORT'
+- name: adjust lines in nfs config
+  lineinfile:
+    line: MOUNTD_PORT=9025
+    path: /etc/sysconfig/nfs
+    regexp: '^#MOUNTD_PORT'
+- name: adjust lines in nfs config
+  lineinfile:
+    line: STATD_PORT=9026
+    path: /etc/sysconfig/nfs
+    regexp: '^#STATD_PORT'

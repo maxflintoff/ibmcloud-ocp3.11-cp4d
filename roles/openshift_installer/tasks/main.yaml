@@ -1,3 +1,6 @@
+- name: load vars
+  include_vars:
+    dir: "{{playbook_dir}}/installer_files/group_vars"
 - name: setup known hosts
   shell:  |
     ssh-keyscan {{ item.name }}.{{ cluster_domain }} >> /root/.ssh/known_hosts
@@ -27,12 +30,12 @@
     regexp: '^ansible_ssh_private_key_file'
 - name: creating cp4d dir
   file:
-    path: /opt/cp4d/
+    path: /opt/cp4d/bin
     state: directory
 - name: extracting cp4d installer files
-  unarchive:
-    src: "{{playbook_dir}}/installer_files/cloudpak4data-ee-v2.5.0.0.tgz"
-    dest: /opt/cp4d/
+  copy:
+    src: "{{playbook_dir}}/installer_files/cpd-linux"
+    dest: /opt/cp4d/bin/
 - name: copy repo.yaml
   copy:
     src: "{{playbook_dir}}/installer_files/repo.yaml"
@@ -49,3 +52,15 @@
   copy:
     src: roles
     dest: /opt/installer/
+- name: copy cp4d ansible files
+  copy:
+    src: files
+    dest: /opt/installer/
+- name: unpack cpd-portworx
+  unarchive:
+    src: "{{playbook_dir}}/installer_files/cpd-portworx-2.5.0.1.tar.gz"
+    dest: /opt/cp4d/
+- name: copy images archive
+  copy:
+   src: "{{playbook_dir}}/installer_files/px_2.5.0.1-dist.tgz"
+   dest: /opt/cp4d/cpd-portworx/px-images/px_2.5.0.1-dist.tgz

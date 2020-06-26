@@ -1,5 +1,5 @@
 - name: Create openshift project
-  command: oc new-project zen
+  command: oc new-project {{namespace}}
   ignore_errors: yes
 - name: set executable permssion on cpd-linux
   file:
@@ -10,32 +10,26 @@
 - name: extract docker registry
   command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
   register: docker_registry
-- name: print registry
-  debug:
-    msg: "{{docker_registry.stdout}}"
 - name: get token
   command: oc whoami -t
   register: oc_token
-- name: print token
-  debug:
-    msg: "{{oc_token.stdout}}"
 - name: Run lite adm setup
-  command: bin/cpd-linux adm -r repo.yaml -a lite -n zen --apply --accept-all-licenses
+  command: bin/cpd-linux adm -r repo.yaml -a lite -n {{namespace}} --apply --accept-all-licenses
   args:
     chdir: /opt/cp4d
 - name: add the cp4d namespace role to ocpadmin
-  command: oc adm policy add-role-to-user cpd-admin-role ocpadmin --role-namespace=zen -n zen
+  command: oc adm policy add-role-to-user cpd-admin-role ocpadmin --role-namespace={{namespace}} -n {{namespace}}
   ignore_errors: yes
 - name: Run lite install
   command: |
     bin/cpd-linux
     -r repo.yaml
     -a lite
-    -n zen
-    -c portworx-shared-gp
-    -o cpd-portworx/overrides/cp-override.yaml
-    --transfer-image-to {{docker_registry.stdout}}/zen
-    --cluster-pull-prefix docker-registry.default.svc:5000/zen
+    -n {{namespace}}
+    -c portworx-shared-gp3
+    -o cpd-portworx/overrides/cp-pwx-x86.yaml
+    --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
+    --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
     --target-registry-username ocadmin
     --target-registry-password {{oc_token.stdout}}
     --accept-all-licenses

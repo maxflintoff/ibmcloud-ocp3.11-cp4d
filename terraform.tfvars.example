@@ -30,3 +30,11 @@ openshift_pool_id = "poolid"
 
 # Password cannot currently be set using this variable
 # openshift_password = "Ch4ngeM3"
+
+# namespace to install CP4D services into
+# namespace = "zen"
+
+# Services integration
+# wsl_install = false
+# wkc_install = false
+# wkc_patches = false

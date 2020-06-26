@@ -1,37 +1,37 @@
-
-- name: unarchive portworx
-  unarchive:
-    src: /opt/cp4d/cpd-portworx.tgz
-    remote_src: yes
-    dest: /opt/cp4d/
-- name: update tag block in image script
-  replace:
-    path: /opt/cp4d/cpd-portworx/bin/px-images.sh
-    regexp: 'localhost\/'
-    replace: ''
-    backup: yes
-- name: creating temporary image dir
-  file:
-    path: /tmp/cpd-px-images/
-    state: directory
-- name: running portworx image script
-  command: /opt/cp4d/cpd-portworx/bin/px-images.sh -d /tmp/cpd-px-images/ download
-- name: Apply activation to nodes
-  command: /opt/cp4d/cpd-portworx/bin/px-util initialize
-- name: Load images to nodes
-  command: /opt/cp4d/cpd-portworx/bin/px-images.sh -e 'ssh -o StrictHostKeyChecking=no -l root' -d /tmp/cpd-px-images load
-- name: tag image
-  command: ansible all -m command -a "docker tag portworx/px-enterprise-ibm-icpd-oem:2.3.1.1 docker.io/portworx/px-enterprise-ibm-icpd-oem:2.3.1.1"
+- name: extract docker registry
+  command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
+  register: docker_registry
+- name: get token
+  command: oc whoami -t
+  register: oc_token
+- name: run process-px-images
+  command: |
+    /opt/cp4d/cpd-portworx/px-images/process-px-images.sh
+    -r {{docker_registry.stdout}}
+    -u ocadmin
+    -p {{oc_token.stdout}}
+    -s kube-system
+    -t /opt/cp4d/cpd-portworx/px-images/px_2.5.0.1-dist.tgz
+    -c podman
+  environment:
+    PODMAN_LOGIN_ARGS: --tls-verify=false
+    PODMAN_PUSH_ARGS: --tls-verify=false
 - name: edit installer to allow automated install
   lineinfile:
-    path: /opt/cp4d/cpd-portworx/bin/px-install.sh
+    path: /opt/cp4d/cpd-portworx/px-install-3.11/px-install.sh
     regexp: '^YESTOALL'
     line: YESTOALL=1
-- name: Deploy services
-  command: /opt/cp4d/cpd-portworx/bin/px-install.sh -pp Never install
-- name: Install storage classes
-  command: /opt/cp4d/cpd-portworx/bin/px-sc.sh
-  ignore_errors: yes
+- name: run px-install
+  command: |
+    /opt/cp4d/cpd-portworx/px-install-3.11/px-install.sh
+    -pp Always
+    -R docker-registry.default.svc:5000/kube-system
+    install
+    /dev/xvde
+- name: restart nfs server on workers
+  command: ansible workers -m command -a "systemctl restart nfs-server"
+- name: install storage classes
+  command: /opt/cp4d/cpd-portworx/px-install-3.11/px-sc.sh
 - name: Copy override files
   copy:
     src: overrides/ 

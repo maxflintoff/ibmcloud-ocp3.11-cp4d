@@ -13,9 +13,11 @@ openshift_master_default_subdomain=apps.{{cluster_domain}}
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
 openshift_master_htpasswd_users={'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
 openshift_registry_selector='node-role.kubernetes.io/compute=true'
-openshift_docker_options="--log-opt  max-size=1M --log-opt max-file=3 --insecure-registry 172.30.0.0/16 --log-driver=json-file"
 os_firewall_use_firewalld=True
-openshift_docker_selinux_enabled=false
+openshift_use_crio=True
+openshift_use_crio_only=False
+openshift_crio_enable_docker_gc=True
+openshift_disable_check=docker_storage
 {% if master|length > 1 %}
 openshift_master_cluster_method=native
 openshift_master_cluster_hostname={{lb[0].name}}.{{cluster_domain}}
@@ -40,16 +42,29 @@ openshift_master_cluster_public_hostname={{lb[0].name}}.{{cluster_domain}}
 [nodes]
 {% if master|length == 1 %}
 {% for item in master %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master-infra'
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master-infra-crio'
 {% endfor %}
 {% else %}
 {% for item in master %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master'
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master-crio'
 {% endfor %}
 {% for item in lb %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-infra'
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-infra-crio'
 {% endfor %}
 {% endif %}
 {% for item in workers %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-compute'
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-compute-crio'
 {% endfor %}
+
+# below is a helper inventory set for running additional tasks
+[workers] 
+{% for item in workers %}
+{{item.name}}.{{cluster_domain}}
+{% endfor %}
+
+[all:vars]
+wsl_install={{wsl_install}}
+wkc_install={{wkc_install}}
+wkc_patch={{wkc_patch}}
+namespace={{namespace}}
+subnet={{subnet}}

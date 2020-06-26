@@ -2,6 +2,23 @@
   import_playbook: /opt/openshift/playbooks/prerequisites.yml
 - name: run ocp install
   import_playbook: /opt/openshift/playbooks/deploy_cluster.yml
+- hosts: workers
+  tasks:
+  - name: deploy crio configuration
+    copy:
+      src: crio.conf
+      dest: /etc/crio/crio.conf
+    register: crio_conf
+  - name: restart crio
+    systemd:
+      state: restarted
+      daemon_reload: yes
+      name: crio
+    when: crio_conf.changed
+- hosts: workers
+  remote_user: root
+  roles:
+  - portworx_configure
 - hosts: masters[0]
   remote_user: root
   tasks:

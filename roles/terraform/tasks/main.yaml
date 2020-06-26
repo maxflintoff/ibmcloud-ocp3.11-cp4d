@@ -5,5 +5,4 @@
     project_path: '{{playbook_dir}}'
     state: present
   register: terraform_outputs
-- name: Refresh inventory to ensure new instances exist in inventory
-  meta: refresh_inventory
+- meta: refresh_inventory

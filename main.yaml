@@ -1,6 +1,11 @@
 - hosts: localhost
   roles:
   - terraform
+- hosts: localhost
+  tasks: 
+  - name: load vars
+    include_vars:
+      dir: "{{playbook_dir}}/installer_files/group_vars"
 - hosts: installer
   remote_user: root
   roles:
@@ -18,7 +23,7 @@
   - pause:
       prompt: |
         Now ssh to the installer and run the last playbook: 
-        ssh root@{{installer.public_ip}} -i {{playbook_dir}}/installer_files/id_rsa "tmux new -d -s ocp-install 'ansible-playbook /opt/installer/main.yaml' ; read"
+        ssh root@{{installer.public_ip}} -i {{playbook_dir}}/installer_files/id_rsa "tmux new -d -s ocp-install \; send 'ansible-playbook /opt/installer/main.yaml' Enter"
 
         The above command will run the installer in a disconnected tmux session to attach and monitor
         ssh root@{{installer.public_ip}} -i {{playbook_dir}}/installer_files/id_rsa
