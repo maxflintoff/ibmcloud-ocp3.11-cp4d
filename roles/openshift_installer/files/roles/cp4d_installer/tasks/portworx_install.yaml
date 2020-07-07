@@ -1,26 +1,69 @@
+- set_fact:
+    qty: "{{workers|length}}"
+- name: check if portworx is already deployed
+  command: oc get daemonset portworx --no-headers -n kube-system
+  register: portworx
+  ignore_errors: yes
 - name: extract docker registry
   command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
   register: docker_registry
+  when: portworx.failed
 - name: get token
   command: oc whoami -t
   register: oc_token
+  when: portworx.failed
+- name: run binary
+  command: |
+    ./CP4D_EE_Portworx.bin --quiet --accept --noexec
+  args:
+    chdir: /opt/cp4d/
+  when: portworx.failed
+- name: edit script
+  lineinfile:
+    line: '#display_download_prompt'
+    path: /opt/cp4d/ee/partnumber.sh
+    regexp: '^display_download_prompt$'
+  when: portworx.failed
+- name: trigger download
+  command: ./partnumber.sh
+  args:
+    chdir: /opt/cp4d/ee/
+  when: portworx.failed
+- name: extract cp4d_portworx
+  unarchive:
+    src: /opt/cp4d/ee/cpdv3.0.1_portworx.tgz
+    dest: /opt/cp4d/
+    remote_src: yes
+  when: portworx.failed
+- name: adjust perms of process-px-images
+  file:
+    path: /opt/cp4d/cpd-portworx/px-images/process-px-images.sh
+    mode: '0744'
+    owner: root
+    group: root
+  when: portworx.failed
 - name: run process-px-images
   command: |
-    /opt/cp4d/cpd-portworx/px-images/process-px-images.sh
+    ./process-px-images.sh
     -r {{docker_registry.stdout}}
     -u ocadmin
     -p {{oc_token.stdout}}
     -s kube-system
-    -t /opt/cp4d/cpd-portworx/px-images/px_2.5.0.1-dist.tgz
+    -d ./imgtemp
+    -t ./px_2.5.0.1-dist.tgz
     -c podman
   environment:
     PODMAN_LOGIN_ARGS: --tls-verify=false
     PODMAN_PUSH_ARGS: --tls-verify=false
+  args:
+    chdir: /opt/cp4d/cpd-portworx/px-images
+  when: portworx.failed
 - name: edit installer to allow automated install
   lineinfile:
     path: /opt/cp4d/cpd-portworx/px-install-3.11/px-install.sh
     regexp: '^YESTOALL'
     line: YESTOALL=1
+  when: portworx.failed
 - name: run px-install
   command: |
     /opt/cp4d/cpd-portworx/px-install-3.11/px-install.sh
@@ -28,11 +71,21 @@
     -R docker-registry.default.svc:5000/kube-system
     install
     /dev/xvde
+  when: portworx.failed
 - name: restart nfs server on workers
   command: ansible workers -m command -a "systemctl restart nfs-server"
+  when: portworx.failed
 - name: install storage classes
   command: /opt/cp4d/cpd-portworx/px-install-3.11/px-sc.sh
+  when: portworx.failed
 - name: Copy override files
   copy:
     src: overrides/ 
     dest: /opt/cp4d/cpd-portworx/overrides
+  when: portworx.failed
+- name: wait for portworx pods
+  shell: oc get pods -n kube-system -l name=portworx --no-headers | grep -Ev "(0/1)" | wc -l
+  register: reg_cmd
+  retries: 50
+  delay: 15
+  until: reg_cmd.stdout == qty

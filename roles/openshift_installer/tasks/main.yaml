@@ -30,12 +30,12 @@
     regexp: '^ansible_ssh_private_key_file'
 - name: creating cp4d dir
   file:
-    path: /opt/cp4d/bin
+    path: /opt/cp4d/
     state: directory
 - name: extracting cp4d installer files
-  copy:
-    src: "{{playbook_dir}}/installer_files/cpd-linux"
-    dest: /opt/cp4d/bin/
+  unarchive:
+    src: "{{playbook_dir}}/installer_files/cloudpak4data-ee-3.0.1.tgz"
+    dest: /opt/cp4d/
 - name: copy repo.yaml
   copy:
     src: "{{playbook_dir}}/installer_files/repo.yaml"
@@ -56,11 +56,8 @@
   copy:
     src: files
     dest: /opt/installer/
-- name: unpack cpd-portworx
-  unarchive:
-    src: "{{playbook_dir}}/installer_files/cpd-portworx-2.5.0.1.tar.gz"
-    dest: /opt/cp4d/
-- name: copy images archive
+- name: copy cpd-portworx binary
   copy:
-   src: "{{playbook_dir}}/installer_files/px_2.5.0.1-dist.tgz"
-   dest: /opt/cp4d/cpd-portworx/px-images/px_2.5.0.1-dist.tgz
+    src: "{{playbook_dir}}/installer_files/CP4D_EE_Portworx.bin"
+    dest: /opt/cp4d/
+    mode: '0744'

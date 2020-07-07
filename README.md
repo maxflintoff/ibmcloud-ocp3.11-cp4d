@@ -14,10 +14,9 @@ Note: you can install the provider by running the included `provider.sh` script.
 
 in a folder in the root of this repository called `installer_files` place the files for cloud pak install:
 
-- cpd-linux binary
-- repo.yaml
-- px_2.5.0.1-dist.tgz #the portworx images
-- cpd-portworx-2.5.0.1.tar.gz #portworx installer scripts
+- repo.yaml configured for your services
+- CP4D_EE_Portworx.bin
+- cloudpak4data-ee-3.0.1.tgz
 
 ## Variables
 
