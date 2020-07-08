@@ -67,7 +67,7 @@
 - name: run px-install
   command: |
     /opt/cp4d/cpd-portworx/px-install-3.11/px-install.sh
-    -pp Always
+    -pp IfNotPresent
     -R docker-registry.default.svc:5000/kube-system
     install
     /dev/xvde
