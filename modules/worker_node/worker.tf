@@ -10,7 +10,7 @@ resource "ibm_compute_vm_instance" "workers" {
   ssh_key_ids                = var.ssh_id
   local_disk                 = false
   tags                       = var.tags
-  disks                      = [1000, 100]
+  disks                      = count.index < 3 ? [1000, 100] : [1000]
   private_security_group_ids = [ibm_security_group.worker_sg.id]
   public_security_group_ids  = [ibm_security_group.worker_sg.id]
   public_vlan_id = var.public_vlan

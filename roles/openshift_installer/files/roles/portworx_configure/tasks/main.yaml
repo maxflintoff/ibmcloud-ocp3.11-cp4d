@@ -64,3 +64,8 @@
     line: STATD_PORT=9026
     path: /etc/sysconfig/nfs
     regexp: '^#STATD_PORT'
+- name: restart nfs
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: nfs

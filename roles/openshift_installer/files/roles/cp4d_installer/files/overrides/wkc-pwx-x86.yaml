@@ -1,0 +1,52 @@
+
+zenCoreMetaDb:
+  storageClass: "portworx-metastoredb-sc"
+
+couchdb:
+  persistentVolume:
+    storageClass: "portworx-couchdb-sc"
+    overrideStorageClass: true
+
+elasticsearch:
+  persistence:
+    storageClass: "portworx-elastic-sc"
+    overrideStorageClass: true
+
+wdp-rabbitmq:
+  securityContext:
+    fsGroup: "1000320900" 
+  persistentVolume:
+    storageClass: portworx-gp3-sc
+    overrideStorageClass: true
+   
+redis-ha:
+  persistentVolume:
+    storageClass: portworx-gp3-sc
+    overrideStorageClass: true
+    
+solr:
+  volumeClaim:
+    storageClassName: "portworx-solr-sc"
+    overrideStorageClass: true
+
+shared-services:
+  kafka:
+    volumeClaim:
+      storageClassName: "portworx-kafka-sc"
+      overrideStorageClass: true
+  cassandra:
+    volumeClaim:
+      storageClassName: "portworx-cassandra-sc"
+      overrideStorageClass: true
+
+xmetarepoVolumeInfo:
+  support4kDevice: true
+  volumeClaim:
+    storageClassName: "portworx-db2-rwo-sc"
+    overrideStorageClass: true
+    
+wdp-db2:
+  support4kDevice: true
+  dataVolume:
+    storageClassName: "portworx-db2-rwo-sc"
+    overrideStorageClass: true
