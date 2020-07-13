@@ -58,6 +58,9 @@
   args:
     chdir: /opt/cp4d/cpd-portworx/px-images
   when: portworx.failed
+- name: docker pull on workers
+  command: ansible workers -m command -a "crictl pull --creds ocadmin:{{oc_token.stdout}} docker-registry.default.svc:5000/kube-system/px-enterprise-ibm-icp4d-oem:2.5.0.1"
+  when: portworx.failed
 - name: edit installer to allow automated install
   lineinfile:
     path: /opt/cp4d/cpd-portworx/px-install-3.11/px-install.sh
@@ -71,6 +74,9 @@
     -R docker-registry.default.svc:5000/kube-system
     install
     /dev/xvde
+  when: portworx.failed
+- name: restart nfs server on workers
+  command: ansible workers -m command -a "systemctl restart nfs"
   when: portworx.failed
 - name: restart nfs server on workers
   command: ansible workers -m command -a "systemctl restart nfs-server"
