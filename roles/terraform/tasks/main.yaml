@@ -5,4 +5,5 @@
     project_path: '{{playbook_dir}}'
     state: present
   register: terraform_outputs
-- meta: refresh_inventory
+- name: Refresh inventory to pick up terraform inventory
+  meta: refresh_inventory

@@ -1,7 +1,9 @@
-- set_fact:
+- name: set workers qty fact
+  set_fact:
     qty: 2
   when: workers|length == 2
-- set_fact:
+- name: set workers qty fact
+  set_fact:
     qty: 3
   when: workers|length > 2
 - name: Create docker-registry pvc

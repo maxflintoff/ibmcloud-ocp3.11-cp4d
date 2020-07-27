@@ -10,7 +10,7 @@
   notify: restart ssh
 - name: parse interfaces
   set_fact:
-    internal_interface="{{ item }}"
+    internal_interface: "{{ item }}"
   when: hostvars[inventory_hostname]['ansible_{{item}}']['ipv4']['address'] == installer.private_ip
   with_items:
   - "{{ ansible_interfaces }}"
@@ -49,7 +49,7 @@
     src: inventory.j2
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
     backup: yes
 - name: Set hosts to not auto-update
   lineinfile:

@@ -28,7 +28,7 @@
     state: absent
     no_extra_spaces: yes
     option: NM_CONTROLLED
-    section: null
+    section: 'null'
     owner: root
     group: root
     mode: 0644
@@ -41,7 +41,7 @@
     state: absent
     no_extra_spaces: yes
     option: NM_CONTROLLED
-    section: null
+    section: 'null'
     owner: root
     group: root
     mode: 0644
@@ -57,14 +57,14 @@
   template:
     src: hosts.j2
     dest: /etc/hosts
-    mode: 0644
+    mode: '0644'
 - name: deploy resolv.conf template
   template:
     src: resolv.conf.j2
     dest: /etc/resolv.conf
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
     backup: yes
   notify:
     - reload NetworkManager

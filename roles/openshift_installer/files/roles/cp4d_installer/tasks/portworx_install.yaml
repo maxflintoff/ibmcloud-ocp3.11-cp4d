@@ -1,4 +1,5 @@
-- set_fact:
+- name: set workers qty fact
+  set_fact:
     qty: "{{workers|length}}"
 - name: check if portworx is already deployed
   command: oc get daemonset portworx --no-headers -n kube-system
