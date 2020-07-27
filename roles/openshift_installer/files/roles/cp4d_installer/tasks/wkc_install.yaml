@@ -1,0 +1,26 @@
+- name: extract docker registry
+  command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
+  register: docker_registry
+- name: get token
+  command: oc whoami -t
+  register: oc_token
+- name: Run wkc adm setup
+  command: bin/cpd-linux adm -r repo.yaml -a wkc -n {{namespace}} --apply --accept-all-licenses 
+  args:
+    chdir: /opt/cp4d
+- name: Run wkc install
+  command: |
+    bin/cpd-linux
+    -r repo.yaml
+    -a wkc
+    -n {{namespace}}
+    -c portworx-shared-gp
+    -o cpd-portworx/overrides/wkc-pwx-x86.yaml
+    --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
+    --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
+    --target-registry-username ocadmin
+    --target-registry-password {{oc_token.stdout}}
+    --accept-all-licenses
+    --insecure-skip-tls-verify
+  args:
+    chdir: /opt/cp4d

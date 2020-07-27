@@ -1,0 +1,26 @@
+- name: extract docker registry
+  command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
+  register: docker_registry
+- name: get token
+  command: oc whoami -t
+  register: oc_token
+- name: Run wsl adm setup
+  command: bin/cpd-linux adm -r repo.yaml -a wsl -n {{namespace}} --apply --accept-all-licenses 
+  args:
+    chdir: /opt/cp4d
+- name: Run wsl install
+  command: |
+    bin/cpd-linux
+    -r repo.yaml
+    -a wsl
+    -n {{namespace}}
+    -c portworx-shared-gp3
+    -o cpd-portworx/overrides/ws-pwx-x86.yaml
+    --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
+    --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
+    --target-registry-username ocadmin
+    --target-registry-password {{oc_token.stdout}}
+    --accept-all-licenses
+    --insecure-skip-tls-verify
+  args:
+    chdir: /opt/cp4d

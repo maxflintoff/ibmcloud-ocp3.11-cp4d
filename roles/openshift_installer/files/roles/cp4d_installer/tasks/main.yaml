@@ -6,3 +6,9 @@
   include: registry_setup.yaml
 - name: load assembly installer
   include: lite_install.yaml
+- name: load wsl installer
+  include: wsl_install.yaml
+  when: wsl_install == True
+- name: load wkc installer
+  include: wkc_install.yaml
+  when: wkc_install == True

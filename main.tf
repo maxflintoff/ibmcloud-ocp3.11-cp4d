@@ -125,7 +125,6 @@ module "prepare_ansible" {
   cluster_domain = local.cluster_domain
   wsl_install    = var.wsl_install
   wkc_install    = var.wkc_install
-  wkc_patch      = var.wkc_patch
   namespace      = var.namespace
   subnet         = module.install.subnets.public
 }

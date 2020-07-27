@@ -38,4 +38,3 @@ openshift_pool_id = "poolid"
 # Services integration
 # wsl_install = false
 # wkc_install = false
-# wkc_patches = false

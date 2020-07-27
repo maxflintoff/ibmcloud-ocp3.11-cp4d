@@ -18,3 +18,5 @@ redis-ha:
   persistentVolume:
     overrideStorageClass: true  
     storageClass: "portworx-gp3-sc"
+global:
+  masterTimezone: 'America/Chicago'

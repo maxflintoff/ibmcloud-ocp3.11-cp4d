@@ -9,6 +9,5 @@ variable "master" {}
 variable "lb" {}
 variable "wsl_install" {}
 variable "wkc_install" {}
-variable "wkc_patch" {}
 variable "namespace" {}
 variable "subnet" {}
