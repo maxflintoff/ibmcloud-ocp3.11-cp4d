@@ -16,6 +16,7 @@ openshift_pool_id = "poolid"
 # ssh_key = [ "example-ssh-key" ]
 
 # Other variables that you can change if you want to. If left commented, they will be populated with the value shown here.
+# Valid flavors can be viewed with the ibmcloud cli tool using `ibmcloud sl vs options`
 # os_reference = "REDHAT_7_64"
 # installer_os_reference = "CENTOS_7_64"
 # master_qty = 3
