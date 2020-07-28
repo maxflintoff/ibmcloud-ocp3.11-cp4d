@@ -57,7 +57,7 @@ resource "ibm_security_group_rule" "worker_nodeport" {
 resource "ibm_security_group_rule" "worker_portworx" {
   direction         = "ingress"
   port_range_min    = 9001
-  port_range_max    = 9022
+  port_range_max    = 9023
   protocol          = "tcp"
   security_group_id = ibm_security_group.worker_sg.id
   remote_ip         = var.public_subnet
@@ -140,6 +140,24 @@ resource "ibm_security_group_rule" "worker_portworx_kvdb" {
   port_range_min    = 6060
   port_range_max    = 6061
   protocol          = "tcp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
+resource "ibm_security_group_rule" "worker_portworx_mountd_statd" {
+  direction         = "ingress"
+  port_range_min    = 9025
+  port_range_max    = 9026
+  protocol          = "tcp"
+  security_group_id = ibm_security_group.worker_sg.id
+  remote_ip         = var.public_subnet
+}
+
+resource "ibm_security_group_rule" "worker_portworx_lockd_udp" {
+  direction         = "ingress"
+  port_range_min    = 9024
+  port_range_max    = 9024
+  protocol          = "udp"
   security_group_id = ibm_security_group.worker_sg.id
   remote_ip         = var.public_subnet
 }
