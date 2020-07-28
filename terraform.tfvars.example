@@ -8,6 +8,7 @@ redhat_pw = "redhat_password"
 openshift_pool_id = "poolid"
 
 # Recommended variables - you should probably set these but they will be set as shown if you leave them commented
+# The cluster name must consist of lower case alphanumeric characters and dashes only
 # cluster_name = "cluster"
 # region = "eu-gb"
 # datacenter = "lon02"
