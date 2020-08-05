@@ -5,23 +5,23 @@ etcd
 lb
 
 [OSEv3:vars]
-openshift_deployment_type=openshift-enterprise
-ansible_ssh_user=root
-oreg_auth_user={{rh_user}}
-oreg_auth_password={{rh_pass}}
-openshift_master_default_subdomain=apps.{{cluster_domain}}
-openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
-openshift_master_htpasswd_users={'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
-openshift_registry_selector='node-role.kubernetes.io/compute=true'
-os_firewall_use_firewalld=True
-openshift_use_crio=True
-openshift_use_crio_only=False
-openshift_crio_enable_docker_gc=True
-openshift_disable_check=docker_storage
+openshift_deployment_type = openshift-enterprise
+ansible_ssh_user = root
+oreg_auth_user = {{rh_user}}
+oreg_auth_password = {{rh_pass}}
+openshift_master_default_subdomain = apps.{{cluster_domain}}
+openshift_master_identity_providers = [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+openshift_master_htpasswd_users = {'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
+openshift_registry_selector = 'node-role.kubernetes.io/compute=true'
+os_firewall_use_firewalld = True
+openshift_use_crio = True
+openshift_use_crio_only = False
+openshift_crio_enable_docker_gc = True
+openshift_disable_check = docker_storage
 {% if master|length > 1 %}
-openshift_master_cluster_method=native
-openshift_master_cluster_hostname={{lb[0].name}}.{{cluster_domain}}
-openshift_master_cluster_public_hostname={{lb[0].name}}.{{cluster_domain}}
+openshift_master_cluster_method = native
+openshift_master_cluster_hostname = {{lb[0].name}}.{{cluster_domain}}
+openshift_master_cluster_public_hostname = {{lb[0].name}}.{{cluster_domain}}
 {% endif %}
 
 [masters]
@@ -63,7 +63,7 @@ openshift_master_cluster_public_hostname={{lb[0].name}}.{{cluster_domain}}
 {% endfor %}
 
 [all:vars]
-wsl_install={{wsl_install}}
-wkc_install={{wkc_install}}
-namespace={{namespace}}
-subnet={{subnet}}
+wsl_install = {{wsl_install}}
+wkc_install = {{wkc_install}}
+namespace = {{namespace}}
+subnet = {{subnet}}
