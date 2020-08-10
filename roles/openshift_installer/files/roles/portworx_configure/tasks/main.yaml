@@ -26,17 +26,15 @@
     state: enabled
     port: "{{item}}"
   loop:
-    - 9001-9022/tcp
-    - 9002/udp
-    - 6060-6061/tcp
     - 111/tcp
     - 2049/tcp
-    - 9023/tcp
-    - 9025/tcp
-    - 9026/tcp
+    - 6060-6061/tcp
+    - 9001-9023/tcp
+    - 9025-9026/tcp
     - 20048/tcp
     - 111/udp
     - 2049/udp
+    - 9002/udp
     - 9024/udp
     - 20048/udp
 - name: restart firewalld
