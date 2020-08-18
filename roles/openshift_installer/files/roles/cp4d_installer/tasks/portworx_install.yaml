@@ -1,6 +1,21 @@
 - name: set workers qty fact
   set_fact:
     qty: "{{workers|length}}"
+- name: get node names
+  command: oc get nodes -o name -l node-role.kubernetes.io/compute=true
+  register: worker_nodes
+- name: label nodes
+  command: oc label {{item}} px/metadata-node=true --overwrite
+  loop: "{{worker_nodes.stdout_lines}}"
+  loop_control:
+    index_var: index
+  when: index < 3
+- name: label nodes
+  command: oc label {{item}} px/metadata-node=false --overwrite
+  loop: "{{worker_nodes.stdout_lines}}"
+  loop_control:
+    index_var: index
+  when: index > 2
 - name: check if portworx is already deployed
   command: oc get daemonset portworx --no-headers -n kube-system
   register: portworx
