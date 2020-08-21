@@ -8,6 +8,7 @@ redhat_pw = "redhat_password"
 openshift_pool_id = "poolid"
 
 # Recommended variables - you should probably set these but they will be set as shown if you leave them commented
+# The cluster name must consist of lower case alphanumeric characters and dashes only
 # cluster_name = "cluster"
 # region = "eu-gb"
 # datacenter = "lon02"
@@ -16,14 +17,15 @@ openshift_pool_id = "poolid"
 # ssh_key = [ "example-ssh-key" ]
 
 # Other variables that you can change if you want to. If left commented, they will be populated with the value shown here.
+# Valid flavors can be viewed with the ibmcloud cli tool using `ibmcloud sl vs options`
 # os_reference = "REDHAT_7_64"
 # installer_os_reference = "CENTOS_7_64"
 # master_qty = 3
 # master_name = ["master1", "master2", "master3"]
 # master_flavor = "B1_8X32X100"
-# worker_qty = 3
-# worker_name = ["worker1", "worker2", "worker3"]
-# worker_flavor = "B1_32X64X100"
+# compute_qty = 3
+# compute_name = ["compute1", "compute2", "compute3"]
+# compute_flavor = "B1_32X64X100"
 # resource_group_name = "ocp_resources"
 # generation = "1"
 # installer_flavor = "B1_2X8X100"
@@ -37,4 +39,3 @@ openshift_pool_id = "poolid"
 # Services integration
 # wsl_install = false
 # wkc_install = false
-# wkc_patches = false

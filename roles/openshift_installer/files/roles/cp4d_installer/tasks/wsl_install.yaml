@@ -14,8 +14,8 @@
     -r repo.yaml
     -a wsl
     -n {{namespace}}
-    -c portworx-shared-gp
-    -o cpd-portworx/overrides/ws-override.yaml
+    -c portworx-shared-gp3
+    -o cpd-portworx/overrides/ws-pwx-x86.yaml
     --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
     --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
     --target-registry-username ocadmin

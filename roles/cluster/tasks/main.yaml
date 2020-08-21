@@ -57,14 +57,14 @@
   template:
     src: hosts.j2
     dest: /etc/hosts
-    mode: 0644
+    mode: '0644'
 - name: deploy resolv.conf template
   template:
     src: resolv.conf.j2
     dest: /etc/resolv.conf
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
     backup: yes
   notify:
     - reload NetworkManager
@@ -83,7 +83,6 @@
     - sos
     - psacct
     - docker-1.13.1
-    - docker-novolume-plugin
     state: present
   notify:
   - reboot machine
@@ -100,20 +99,14 @@
     state: latest
   notify:
   - reboot machine
-- name: get docker config
-  command: cat /etc/sysconfig/docker-storage
-  register: docker_storage
-  ignore_errors: yes
-- name: fix docker storage
-  include_tasks: docker-storage.yaml
-  when: docker_storage is not search("dm.thinpooldev")
-- name: restart docker (to ensure storage options are detected for the OCP install)
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: docker
 - name: Making sure NetworkManager is started
   service:
     name: NetworkManager
     state: started
     enabled: yes
+- name: Deploy systemctl configuration
+  copy:
+    src: 42-cp4d.conf
+    dest: /etc/sysctl.d/42-cp4d.conf
+- name: load sysctl
+  command: sysctl -p /etc/sysctl.d/42-cp4d.conf

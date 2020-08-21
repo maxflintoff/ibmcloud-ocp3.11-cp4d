@@ -1,11 +1,16 @@
 - hosts: localhost
   roles:
   - terraform
+- hosts: localhost
+  tasks: 
+  - name: load vars
+    include_vars:
+      dir: "{{playbook_dir}}/installer_files/group_vars"
 - hosts: installer
   remote_user: root
   roles:
   - installer
-- hosts: ocp_workers,ocp_masters,ocp_lb
+- hosts: ocp_computes,ocp_masters,ocp_infra
   remote_user: root
   roles:
   - cluster

@@ -26,8 +26,8 @@
     -r repo.yaml
     -a lite
     -n {{namespace}}
-    -c portworx-shared-gp
-    -o cpd-portworx/overrides/cp-override.yaml
+    -c portworx-shared-gp3
+    -o cpd-portworx/overrides/cp-pwx-x86.yaml
     --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
     --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
     --target-registry-username ocadmin

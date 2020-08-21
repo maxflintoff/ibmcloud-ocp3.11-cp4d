@@ -2,24 +2,26 @@
 masters
 nodes
 etcd
-lb
+infra
 
 [OSEv3:vars]
-openshift_deployment_type=openshift-enterprise
-ansible_ssh_user=root
-oreg_auth_user={{rh_user}}
-oreg_auth_password={{rh_pass}}
-openshift_master_default_subdomain=apps.{{cluster_domain}}
-openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
-openshift_master_htpasswd_users={'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
-openshift_registry_selector='node-role.kubernetes.io/compute=true'
-openshift_docker_options="--log-opt  max-size=1M --log-opt max-file=3 --insecure-registry 172.30.0.0/16 --log-driver=json-file"
-os_firewall_use_firewalld=True
-openshift_docker_selinux_enabled=false
+openshift_deployment_type = openshift-enterprise
+ansible_ssh_user = root
+oreg_auth_user = {{rh_user}}
+oreg_auth_password = {{rh_pass}}
+openshift_master_default_subdomain = apps.{{cluster_domain}}
+openshift_master_identity_providers = [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+openshift_master_htpasswd_users = {'ocpadmin': '$apr1$AeLdhIiN$VTRD43OglLcEyH7bOVXPP0'} #Ch4ngeM3
+openshift_registry_selector = 'node-role.kubernetes.io/compute=true'
+os_firewall_use_firewalld = True
+openshift_use_crio = True
+openshift_use_crio_only = False
+openshift_crio_enable_docker_gc = True
+openshift_disable_check = docker_storage
 {% if master|length > 1 %}
-openshift_master_cluster_method=native
-openshift_master_cluster_hostname={{lb[0].name}}.{{cluster_domain}}
-openshift_master_cluster_public_hostname={{lb[0].name}}.{{cluster_domain}}
+openshift_master_cluster_method = native
+openshift_master_cluster_hostname = {{infra[0].name}}.{{cluster_domain}}
+openshift_master_cluster_public_hostname = {{infra[0].name}}.{{cluster_domain}}
 {% endif %}
 
 [masters]
@@ -32,37 +34,36 @@ openshift_master_cluster_public_hostname={{lb[0].name}}.{{cluster_domain}}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
 
-[lb]
-{% for item in lb %}
+[infra]
+{% for item in infra %}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
 
 [nodes]
 {% if master|length == 1 %}
 {% for item in master %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master-infra'
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master-infra-crio'
 {% endfor %}
 {% else %}
 {% for item in master %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master'
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master-crio'
 {% endfor %}
-{% for item in lb %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-infra'
+{% for item in infra %}
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-infra-crio'
 {% endfor %}
 {% endif %}
-{% for item in workers %}
-{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-compute'
+{% for item in computes %}
+{{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-compute-crio'
 {% endfor %}
 
 # below is a helper inventory set for running additional tasks
-[workers] 
-{% for item in workers %}
+[computes] 
+{% for item in computes %}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
 
 [all:vars]
-wsl_install={{wsl_install}}
-wkc_install={{wkc_install}}
-wkc_patch={{wkc_patch}}
-namespace={{namespace}}
-subnet={{subnet}}
+wsl_install = {{wsl_install}}
+wkc_install = {{wkc_install}}
+namespace = {{namespace}}
+subnet = {{subnet}}

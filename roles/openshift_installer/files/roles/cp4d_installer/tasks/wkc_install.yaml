@@ -15,7 +15,7 @@
     -a wkc
     -n {{namespace}}
     -c portworx-shared-gp
-    -o cpd-portworx/overrides/wkc-override.yaml
+    -o cpd-portworx/overrides/wkc-pwx-x86.yaml
     --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
     --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
     --target-registry-username ocadmin
@@ -24,37 +24,3 @@
     --insecure-skip-tls-verify
   args:
     chdir: /opt/cp4d
-- name: Run wkc patch 1
-  command: |
-    bin/cpd-linux
-    patch
-    -r repo.yaml
-    -a wkc
-    -n {{namespace}}
-    --patch-name cpd-2.5.0.0-ccs-patch-5
-    --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
-    --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
-    --target-registry-username ocadmin
-    --target-registry-password {{oc_token.stdout}}
-    --accept-all-licenses
-    --insecure-skip-tls-verify
-  args:
-    chdir: /opt/cp4d
-  when: wkc_patch == True
-- name: Run wkc patch 2
-  command: |
-    bin/cpd-linux
-    patch
-    -r repo.yaml
-    -a wkc
-    -n {{namespace}}
-    --patch-name wkc-patch-3.0.0.6
-    --transfer-image-to {{docker_registry.stdout}}/{{namespace}}
-    --cluster-pull-prefix docker-registry.default.svc:5000/{{namespace}}
-    --target-registry-username ocadmin
-    --target-registry-password {{oc_token.stdout}}
-    --accept-all-licenses
-    --insecure-skip-tls-verify
-  args:
-    chdir: /opt/cp4d
-  when: wkc_patch == True

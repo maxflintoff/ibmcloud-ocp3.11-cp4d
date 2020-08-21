@@ -18,21 +18,7 @@
     immediate: no
     state: enabled
     source: "{{subnet}}"
-- name: add tcp port range to cluster zone
-  firewalld:
-    zone: cluster
-    permanent: yes
-    immediate: no
-    state: enabled
-    port: 9001-9022/tcp
-- name: add udp port to cluster zone
-  firewalld:
-    zone: cluster
-    permanent: yes
-    immediate: no
-    state: enabled
-    port: 9002/udp
-- name: add nfs ports to cluster zone
+- name: add ports to cluster zone
   firewalld:
     zone: cluster
     permanent: yes
@@ -40,14 +26,44 @@
     state: enabled
     port: "{{item}}"
   loop:
-    - 2049/tcp
-    - 2049/udp
     - 111/tcp
-    - 111/udp
+    - 2049/tcp
+    - 6060-6061/tcp
+    - 9001-9023/tcp
+    - 9025-9026/tcp
     - 20048/tcp
+    - 111/udp
+    - 2049/udp
+    - 9002/udp
+    - 9024/udp
     - 20048/udp
 - name: restart firewalld
   systemd:
     state: restarted
     daemon_reload: yes
     name: firewalld
+- name: adjust lines in nfs config
+  lineinfile:
+    line: LOCKD_TCPPORT=9023
+    path: /etc/sysconfig/nfs
+    regexp: '^#LOCKD_TCPPORT'
+- name: adjust lines in nfs config
+  lineinfile:
+    line: LOCKD_UDPPORT=9024
+    path: /etc/sysconfig/nfs
+    regexp: '^#LOCKD_UDPPORT'
+- name: adjust lines in nfs config
+  lineinfile:
+    line: MOUNTD_PORT=9025
+    path: /etc/sysconfig/nfs
+    regexp: '^#MOUNTD_PORT'
+- name: adjust lines in nfs config
+  lineinfile:
+    line: STATD_PORT=9026
+    path: /etc/sysconfig/nfs
+    regexp: '^#STATD_PORT'
+- name: restart nfs
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: nfs

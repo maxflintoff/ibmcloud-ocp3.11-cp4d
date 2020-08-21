@@ -5,11 +5,13 @@ shared-services:
       storageClassName: "portworx-kafka-sc"
 
 wdp-db2:
-  dataVolume:
-    storageClassName: "portworx-db2-sc"
+  support4kDevice: true
+  volumeClaim:
+    storageClassName: "portworx-db2-rwo-sc"
     overrideStorageClass: true
 
 xmetarepoVolumeInfo:
+  support4kDevice: true
   volumeClaim:
-    storageClassName: "portworx-db2-sc"
+    storageClassName: "portworx-db2-rwo-sc"
     overrideStorageClass: true

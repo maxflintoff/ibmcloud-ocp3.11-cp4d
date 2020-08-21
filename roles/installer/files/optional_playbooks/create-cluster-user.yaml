@@ -1,0 +1,52 @@
+- hosts: all,localhost
+  vars:
+    username: cpat
+  tasks:
+  - name: Create new user
+    user:
+      name: "{{ username }}"
+      groups: wheel
+  - name: copy ssh folder from root to new user
+    copy:
+      src: /root/.ssh
+      dest: /home/{{username}}/
+      owner: "{{ username }}"
+      group: "{{ username }}"
+      mode: preserve
+      remote_src: yes
+  - name: remove root .ssh folder
+    file:
+      path: /etc/.ssh
+      state: absent
+  - name: copy sudoers template
+    template:
+      src: sudoers-additional
+      dest: /etc/sudoers.d/{{username}}
+      validate: /usr/sbin/visudo -cf %s
+  - name: remove ssh root login
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      line: PermitRootLogin no
+      regexp: '^PermitRootLogin'
+  - name: restart ssh
+    service:
+      name: sshd
+      state: restarted
+- hosts: localhost
+  vars:
+    username: cpat
+  tasks:
+  - name: update ansible hosts file
+    ini_file:
+      path: /etc/ansible/hosts
+      section: OSEv3:vars
+      option: ansible_ssh_user
+      value: "{{username}}"
+      backup: yes
+  - name: update ansible hosts file
+    ini_file:
+      path: /etc/ansible/hosts
+      section: OSEv3:vars
+      option: ansible_become
+      value: 'true'
+      backup: yes

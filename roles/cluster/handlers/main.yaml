@@ -1,14 +1,9 @@
 - name: reload NetworkManager
   service:
     name: NetworkManager
-    state: reloaded
+    state: restarted
 - name: reboot machine
   reboot:
-- name: restart docker
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: docker
 - name: restart ssh
   service:
     name: sshd

@@ -9,7 +9,6 @@ resource "ibm_compute_vm_instance" "master" {
   ssh_key_ids                = var.ssh_id
   local_disk                 = false
   tags                       = var.tags
-  disks                      = [100]
   private_security_group_ids = [ibm_security_group.master_sg.id]
   public_security_group_ids  = [ibm_security_group.master_sg.id]
   datacenter                 = var.datacenter
