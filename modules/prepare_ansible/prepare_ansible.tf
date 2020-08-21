@@ -3,11 +3,11 @@ resource "local_file" "inventory" {
 [ocp_masters]
 %{for master in var.master}${master.public_ip}
 %{endfor}
-[ocp_lb]
-%{for lb in var.lb}${lb.public_ip}
+[ocp_infra]
+%{for infra in var.infra}${infra.public_ip}
 %{endfor}
-[ocp_workers]
-%{for worker in var.workers}${worker.public_ip}
+[ocp_computes]
+%{for compute in var.computes}${compute.public_ip}
 %{endfor}
 [installer]
 ${var.installer.public_ip}
@@ -22,8 +22,8 @@ rh_user: ${var.rh_user}
 rh_pass: ${var.rh_pass}
 pool_id: ${var.pool_id}
 master: ${jsonencode(var.master)}
-lb: ${jsonencode(var.lb)}
-workers: ${jsonencode(var.workers)}
+infra: ${jsonencode(var.infra)}
+computes: ${jsonencode(var.computes)}
 installer: ${jsonencode(var.installer)}
 cluster_domain: ${var.cluster_domain}
 wsl_install: ${var.wsl_install}

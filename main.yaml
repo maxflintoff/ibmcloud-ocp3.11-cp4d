@@ -10,7 +10,7 @@
   remote_user: root
   roles:
   - installer
-- hosts: ocp_workers,ocp_masters,ocp_lb
+- hosts: ocp_computes,ocp_masters,ocp_infra
   remote_user: root
   roles:
   - cluster

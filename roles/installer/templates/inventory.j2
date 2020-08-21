@@ -2,7 +2,7 @@
 masters
 nodes
 etcd
-lb
+infra
 
 [OSEv3:vars]
 openshift_deployment_type = openshift-enterprise
@@ -20,8 +20,8 @@ openshift_crio_enable_docker_gc = True
 openshift_disable_check = docker_storage
 {% if master|length > 1 %}
 openshift_master_cluster_method = native
-openshift_master_cluster_hostname = {{lb[0].name}}.{{cluster_domain}}
-openshift_master_cluster_public_hostname = {{lb[0].name}}.{{cluster_domain}}
+openshift_master_cluster_hostname = {{infra[0].name}}.{{cluster_domain}}
+openshift_master_cluster_public_hostname = {{infra[0].name}}.{{cluster_domain}}
 {% endif %}
 
 [masters]
@@ -34,8 +34,8 @@ openshift_master_cluster_public_hostname = {{lb[0].name}}.{{cluster_domain}}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
 
-[lb]
-{% for item in lb %}
+[infra]
+{% for item in infra %}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
 
@@ -48,17 +48,17 @@ openshift_master_cluster_public_hostname = {{lb[0].name}}.{{cluster_domain}}
 {% for item in master %}
 {{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-master-crio'
 {% endfor %}
-{% for item in lb %}
+{% for item in infra %}
 {{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-infra-crio'
 {% endfor %}
 {% endif %}
-{% for item in workers %}
+{% for item in computes %}
 {{item.name}}.{{cluster_domain}} openshift_node_group_name='node-config-compute-crio'
 {% endfor %}
 
 # below is a helper inventory set for running additional tasks
-[workers] 
-{% for item in workers %}
+[computes] 
+{% for item in computes %}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
 

@@ -1,6 +1,6 @@
 variable "cluster_name" {}
 variable "domain" {}
 variable "master" {}
-variable "worker" {}
+variable "compute" {}
 variable "master_qty" {}
-variable "lb" {}
+variable "infra" {}

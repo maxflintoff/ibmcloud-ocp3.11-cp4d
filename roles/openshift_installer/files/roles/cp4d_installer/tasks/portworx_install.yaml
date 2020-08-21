@@ -1,18 +1,18 @@
-- name: set workers qty fact
+- name: set computes qty fact
   set_fact:
-    qty: "{{workers|length}}"
+    qty: "{{computes|length}}"
 - name: get node names
   command: oc get nodes -o name -l node-role.kubernetes.io/compute=true
-  register: worker_nodes
+  register: compute_nodes
 - name: label nodes
   command: oc label {{item}} px/metadata-node=true --overwrite
-  loop: "{{worker_nodes.stdout_lines}}"
+  loop: "{{compute_nodes.stdout_lines}}"
   loop_control:
     index_var: index
   when: index < 3
 - name: label nodes
   command: oc label {{item}} px/metadata-node=false --overwrite
-  loop: "{{worker_nodes.stdout_lines}}"
+  loop: "{{compute_nodes.stdout_lines}}"
   loop_control:
     index_var: index
   when: index > 2
@@ -74,8 +74,8 @@
   args:
     chdir: /opt/cp4d/cpd-portworx/px-images
   when: portworx.failed
-- name: docker pull on workers
-  command: ansible workers -m command -a "crictl pull --creds ocadmin:{{oc_token.stdout}} docker-registry.default.svc:5000/kube-system/px-enterprise-ibm-icp4d-oem:2.5.0.1"
+- name: docker pull on computes
+  command: ansible computes -m command -a "crictl pull --creds ocadmin:{{oc_token.stdout}} docker-registry.default.svc:5000/kube-system/px-enterprise-ibm-icp4d-oem:2.5.0.1"
   when: portworx.failed
 - name: edit installer to allow automated install
   lineinfile:
@@ -91,11 +91,11 @@
     install
     /dev/xvde
   when: portworx.failed
-- name: restart nfs server on workers
-  command: ansible workers -m command -a "systemctl restart nfs"
+- name: restart nfs server on computes
+  command: ansible computes -m command -a "systemctl restart nfs"
   when: portworx.failed
-- name: restart nfs server on workers
-  command: ansible workers -m command -a "systemctl restart nfs-server"
+- name: restart nfs server on computes
+  command: ansible computes -m command -a "systemctl restart nfs-server"
   when: portworx.failed
 - name: install storage classes
   command: /opt/cp4d/cpd-portworx/px-install-3.11/px-sc.sh

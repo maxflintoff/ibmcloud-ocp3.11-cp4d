@@ -1,11 +1,11 @@
-- name: set workers qty fact
+- name: set computes qty fact
   set_fact:
     qty: 2
-  when: workers|length == 2
-- name: set workers qty fact
+  when: computes|length == 2
+- name: set computes qty fact
   set_fact:
     qty: 3
-  when: workers|length > 2
+  when: computes|length > 2
 - name: Create docker-registry pvc
   command: oc create -f /opt/installer/roles/cp4d_installer/files/docker-registry-pvc.yaml
   ignore_errors: yes

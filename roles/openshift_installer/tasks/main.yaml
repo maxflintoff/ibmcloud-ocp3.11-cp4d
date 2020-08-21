@@ -12,13 +12,13 @@
     ssh-keyscan {{ item.name }}.{{ cluster_domain }} >> /root/.ssh/known_hosts
     ssh-keyscan {{ item.name }} >> /root/.ssh/known_hosts
     ssh-keyscan {{ item.private_ip }} >> /root/.ssh/known_hosts
-  with_items: "{{lb}}"
+  with_items: "{{infra}}"
 - name: setup known hosts
   shell:  |
     ssh-keyscan {{ item.name }}.{{ cluster_domain }} >> /root/.ssh/known_hosts
     ssh-keyscan {{ item.name }} >> /root/.ssh/known_hosts
     ssh-keyscan {{ item.private_ip }} >> /root/.ssh/known_hosts
-  with_items: "{{workers}}"
+  with_items: "{{computes}}"
 - name: copy variables
   copy:
     src: "{{playbook_dir}}/installer_files/group_vars"

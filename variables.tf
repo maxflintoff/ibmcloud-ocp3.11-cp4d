@@ -79,19 +79,19 @@ variable "master_flavor" {
   default = "B1_8X32X100"
 }
 
-variable "worker_qty" {
+variable "compute_qty" {
   type    = number
   default = 3
 }
 
-variable "worker_name" {
+variable "compute_name" {
   type = list(string)
   default = [
-    "worker1", "worker2", "worker3"
+    "compute1", "compute2", "compute3"
   ]
 }
 
-variable "worker_flavor" {
+variable "compute_flavor" {
   type    = string
   default = "B1_32X64X100"
 }
@@ -116,12 +116,12 @@ variable "openshift_password" {
   default = "Ch4ngeM3"
 }
 
-variable "lb_name" {
+variable "infra_name" {
   type    = string
-  default = "lb"
+  default = "infra"
 }
 
-variable "lb_flavor" {
+variable "infra_flavor" {
   type    = string
   default = "B1_2X8X100"
 }
