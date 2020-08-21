@@ -109,7 +109,7 @@
   lineinfile:
     path: /etc/dnsmasq.conf
     line: address=/apps.{{ cluster_domain }}/{{ master[0].public_ip }}
-  when: "{{master|length == 1}}"
+  when: master|length == 1
   notify: "Restart DNSMasq"
 - name: append infra address to dnsmasq
   lineinfile:

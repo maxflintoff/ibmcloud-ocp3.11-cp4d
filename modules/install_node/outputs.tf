@@ -9,6 +9,6 @@ output "ips" {
 output "subnets" {
   value = {
     "private" = (ibm_compute_vm_instance.installer.private_subnet)
-    "public" = (ibm_compute_vm_instance.installer.public_subnet)
+    "public"  = (ibm_compute_vm_instance.installer.public_subnet)
   }
 }

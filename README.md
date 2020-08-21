@@ -1,6 +1,6 @@
 # Cloud Pak for Data installer for IBM Cloud
 
-This repository houses a set of automation for deploying infrastructure, openshift, and cloud pak for data.
+This repository houses a set of automation for deploying infrastructure, openshift 3.11, portworx, and cloud pak for data.
 
 ## Prerequisites
 
@@ -40,6 +40,8 @@ Additionally it is recommended to set additional variables:
 
 ## Deployment
 
+**If you intend to use the portworx instance as your primary storage method you must deploy a minimum of 3 worker nodes**
+
 To run this deployment run this series of commands from the root folder
 
 ```bash
@@ -66,6 +68,7 @@ Your cluster will be up and available at a url with this format
 `https://console.apps.<cluster_name>.<domain>`
 
 The default credentials are:
+currently the password is unable to be changed until after the cloud pak is installed.
 
 ```
 username: ocpadmin

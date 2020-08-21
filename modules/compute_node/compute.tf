@@ -5,7 +5,7 @@ resource "ibm_compute_vm_instance" "computes" {
   domain                     = var.domain
   flavor_key_name            = var.flavor
   os_reference_code          = var.os
-  datacenter = var.datacenter
+  datacenter                 = var.datacenter
   network_speed              = 1000
   ssh_key_ids                = var.ssh_id
   local_disk                 = false

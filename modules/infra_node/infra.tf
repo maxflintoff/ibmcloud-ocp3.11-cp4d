@@ -4,6 +4,7 @@ resource "ibm_compute_vm_instance" "infra" {
   hostname                   = var.hostname
   domain                     = var.domain
   flavor_key_name            = var.flavor
+  datacenter                 = var.datacenter
   os_reference_code          = var.os
   network_speed              = 1000
   ssh_key_ids                = var.ssh_id

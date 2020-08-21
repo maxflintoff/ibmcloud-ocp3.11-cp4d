@@ -10,6 +10,6 @@ resource "ibm_compute_vm_instance" "installer" {
   tags                       = var.tags
   private_security_group_ids = [ibm_security_group.installer_private_sg.id]
   public_security_group_ids  = [ibm_security_group.installer_public_sg.id]
-  public_vlan_id = var.public_vlan
-  private_vlan_id = var.private_vlan
+  public_vlan_id             = var.public_vlan
+  private_vlan_id            = var.private_vlan
 }
