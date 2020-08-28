@@ -13,8 +13,8 @@ resource "ibm_compute_vm_instance" "computes" {
   disks                      = count.index < 3 ? [1000, 100] : [1000]
   private_security_group_ids = [ibm_security_group.compute_sg.id]
   public_security_group_ids  = [ibm_security_group.compute_sg.id]
-  public_vlan_id = var.public_vlan
-  private_vlan_id = var.private_vlan
-  public_subnet = var.public_subnet
-  private_subnet = var.private_subnet
+  public_vlan_id             = var.public_vlan
+  private_vlan_id            = var.private_vlan
+  public_subnet              = var.public_subnet
+  private_subnet             = var.private_subnet
 }

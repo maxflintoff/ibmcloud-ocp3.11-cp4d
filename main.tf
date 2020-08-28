@@ -79,35 +79,35 @@ module "master" {
 module "infra" {
   source = "./modules/infra_node"
 
-  hostname   = var.infra_name
-  domain     = local.cluster_domain
-  qty        = local.infra_count
-  flavor     = var.infra_flavor
-  os         = var.os_reference
-  ssh_id     = local.ssh_keys
-  tags       = var.tags
-  datacenter = var.datacenter
-  master_sg  = module.master.security_group
-  public_vlan = module.vlan.public_vlan
-  private_vlan = module.vlan.private_vlan
-  public_subnet = module.install.subnets.public
+  hostname       = var.infra_name
+  domain         = local.cluster_domain
+  qty            = local.infra_count
+  flavor         = var.infra_flavor
+  os             = var.os_reference
+  ssh_id         = local.ssh_keys
+  tags           = var.tags
+  datacenter     = var.datacenter
+  master_sg      = module.master.security_group
+  public_vlan    = module.vlan.public_vlan
+  private_vlan   = module.vlan.private_vlan
+  public_subnet  = module.install.subnets.public
   private_subnet = module.install.subnets.private
 }
 
 module "compute" {
   source = "./modules/compute_node"
 
-  hostnames  = var.compute_name
-  domain     = local.cluster_domain
-  qty        = var.compute_qty
-  flavor     = var.compute_flavor
-  os         = var.os_reference
-  ssh_id     = local.ssh_keys
-  tags       = var.tags
-  datacenter = var.datacenter
-  public_vlan = module.vlan.public_vlan
-  private_vlan = module.vlan.private_vlan
-  public_subnet = module.install.subnets.public
+  hostnames      = var.compute_name
+  domain         = local.cluster_domain
+  qty            = var.compute_qty
+  flavor         = var.compute_flavor
+  os             = var.os_reference
+  ssh_id         = local.ssh_keys
+  tags           = var.tags
+  datacenter     = var.datacenter
+  public_vlan    = module.vlan.public_vlan
+  private_vlan   = module.vlan.private_vlan
+  public_subnet  = module.install.subnets.public
   private_subnet = module.install.subnets.private
 }
 
@@ -120,8 +120,8 @@ module "prepare_ansible" {
   ssh_key        = tls_private_key.new_ssh_key
   installer      = module.install.ips
   master         = module.master.ips
-  computes        = module.compute.ips
-  infra             = module.infra.ips
+  computes       = module.compute.ips
+  infra          = module.infra.ips
   cluster_domain = local.cluster_domain
   wsl_install    = var.wsl_install
   wkc_install    = var.wkc_install
@@ -135,7 +135,7 @@ module "dns" {
   domain       = var.domain
   cluster_name = var.cluster_name
   master       = module.master.master_node
-  compute       = module.compute.compute_nodes
-  infra           = module.infra.infra_node
+  compute      = module.compute.compute_nodes
+  infra        = module.infra.infra_node
   master_qty   = var.master_qty
 }
