@@ -1,6 +1,10 @@
 - name: set computes qty fact
   set_fact:
     qty: "{{computes|length}}"
+- name: check if portworx is already deployed
+  command: oc get daemonset portworx --no-headers -n kube-system
+  register: portworx
+  ignore_errors: yes
 - name: get node names
   command: oc get nodes -o name -l node-role.kubernetes.io/compute=true
   register: compute_nodes
@@ -9,17 +13,13 @@
   loop: "{{compute_nodes.stdout_lines}}"
   loop_control:
     index_var: index
-  when: index < 3
+  when: index < 3 and portworx.failed
 - name: label nodes
   command: oc label {{item}} px/metadata-node=false --overwrite
   loop: "{{compute_nodes.stdout_lines}}"
   loop_control:
     index_var: index
-  when: index > 2
-- name: check if portworx is already deployed
-  command: oc get daemonset portworx --no-headers -n kube-system
-  register: portworx
-  ignore_errors: yes
+  when: index > 2 and portworx.failed
 - name: extract docker registry
   command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
   register: docker_registry
@@ -66,7 +66,7 @@
     -p {{oc_token.stdout}}
     -s kube-system
     -d ./imgtemp
-    -t ./px_2.5.0.1-dist.tgz
+    -t {{item}}
     -c podman
   environment:
     PODMAN_LOGIN_ARGS: --tls-verify=false
@@ -74,9 +74,8 @@
   args:
     chdir: /opt/cp4d/cpd-portworx/px-images
   when: portworx.failed
-- name: docker pull on computes
-  command: ansible computes -m command -a "crictl pull --creds ocadmin:{{oc_token.stdout}} docker-registry.default.svc:5000/kube-system/px-enterprise-ibm-icp4d-oem:2.5.0.1"
-  when: portworx.failed
+  with_fileglob:
+    - "/opt/cp4d/cpd-portworx/px-images/px_*-dist.tgz"
 - name: edit installer to allow automated install
   lineinfile:
     path: /opt/cp4d/cpd-portworx/px-install-3.11/px-install.sh

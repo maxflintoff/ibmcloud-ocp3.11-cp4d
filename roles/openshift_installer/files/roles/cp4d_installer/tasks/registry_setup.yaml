@@ -18,7 +18,7 @@
   register: reg_cmd
   retries: 50
   delay: 15
-  until: reg_cmd.stdout == "{{qty}}"
+  until: reg_cmd.stdout == qty
 - name: extract docker registry
   command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
   register: docker_registry
@@ -33,10 +33,12 @@
     -p {{oc_token.stdout}}
     -s kube-system
     -d ./imgtemp
-    -t ./px_2.5.0.1-dist.tgz
+    -t {{item}}
     -c podman
   environment:
     PODMAN_LOGIN_ARGS: --tls-verify=false
     PODMAN_PUSH_ARGS: --tls-verify=false
   args:
     chdir: /opt/cp4d/cpd-portworx/px-images
+  with_fileglob:
+    - "/opt/cp4d/cpd-portworx/px-images/px_*-dist.tgz"
