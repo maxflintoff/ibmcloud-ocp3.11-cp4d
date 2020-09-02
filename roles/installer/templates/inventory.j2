@@ -2,7 +2,7 @@
 masters
 nodes
 etcd
-infra
+lb
 
 [OSEv3:vars]
 openshift_deployment_type = openshift-enterprise
@@ -34,7 +34,7 @@ openshift_master_cluster_public_hostname = {{infra[0].name}}.{{cluster_domain}}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
 
-[infra]
+[lb]
 {% for item in infra %}
 {{item.name}}.{{cluster_domain}}
 {% endfor %}
