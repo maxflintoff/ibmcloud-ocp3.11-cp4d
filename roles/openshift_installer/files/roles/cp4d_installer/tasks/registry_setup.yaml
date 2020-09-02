@@ -18,7 +18,7 @@
   register: reg_cmd
   retries: 50
   delay: 15
-  until: reg_cmd.stdout == qty
+  until: reg_cmd.stdout|int == qty
 - name: extract docker registry
   command: oc get routes docker-registry -n default -o template=\{\{.spec.host}}
   register: docker_registry
