@@ -23,7 +23,7 @@ in a folder in the root of this repository called `installer_files` place the fi
 There are a few variables that must be set for the install to take place successfully.
 
 - [ibmcloud_api_key](https://cloud.ibm.com/docs/iam?topic=iam-userapikey)
-- iaas_classic_username (this is your login for IBM cloud)
+- [iaas_classic_username](https://cloud.ibm.com/docs/account?topic=account-classic_keys#create-classic-infrastructure-key)
 - [iaas_classic_api_key](https://cloud.ibm.com/docs/iam?topic=iam-classic_keys)
 - redhat_un
 - redhat_pw
