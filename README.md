@@ -9,7 +9,15 @@ This repository houses a set of automation for deploying infrastructure, openshi
 - [ibmcloud provider](https://github.com/IBM-Cloud/terraform-provider-ibm)
 
 Note: you can install the provider by running the included `provider.sh` script. It will install v1.2.5, but this can be changed by editing the appropriate variable within the script.
-  
+
+## Terraform Version
+These commands will enforce terraform version 12 which is required for these scripts to run successfully.
+```bash
+brew remove terraform
+brew link --overwrite terraform@0.12 --force
+terraform version
+```
+
 ## Files required
 
 in a folder in the root of this repository called `installer_files` place the files for cloud pak install:
