@@ -5,19 +5,7 @@ This repository houses a set of automation for deploying infrastructure, openshi
 ## Prerequisites
 
 - Ansible
-- terraform v0.12.x
-- [ibmcloud provider](https://github.com/IBM-Cloud/terraform-provider-ibm)
-
-Note: you can install the provider by running the included `provider.sh` script. It will install v1.2.5, but this can be changed by editing the appropriate variable within the script.
-
-## Terraform Version
-These commands will enforce terraform version 12 which is required for these scripts to run successfully.
-These instructions are only valid when using brew on macOS
-```bash
-brew remove terraform
-brew link --overwrite terraform@0.12 --force
-terraform version
-```
+- terraform v0.14.x (tested at v0.14.3)
 
 ## Files required
 
