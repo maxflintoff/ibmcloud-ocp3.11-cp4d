@@ -5,7 +5,7 @@ This repository houses a set of automation for deploying infrastructure, openshi
 ## Prerequisites
 
 - Ansible
-- terraform v0.14.x (tested at v0.14.3)
+- terraform > 0.13 (tested with v0.14.3 & v0.13.5)
 
 ## Files required
 
